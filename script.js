@@ -879,8 +879,9 @@ if (loadExampleImage === `true`) {
     initSampling({exampleImage: true});
     loadAndRenderExampleImage(`example-photo-DVD-disc.avif`);
 } else if (loadExampleImage === null) {
-    localStorage.setItem(`load-example-image`, `true`);    
+    localStorage.setItem(`load-example-image`, `true`); 
     loadExampleImageInput.setAttribute(`checked`, ``);
+    initSampling({exampleImage: true});
     loadAndRenderExampleImage(`example-photo-DVD-disc.avif`);
     loadExampleImage = `true`;
 }
