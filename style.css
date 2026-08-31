@@ -1,0 +1,524 @@
+html {
+    scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
+}
+
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('./SpaceGrotesk[wght].woff2') format('woff2');
+    font-weight: 300 700;
+    font-display: swap;
+}
+
+body {
+    margin: 64px 20% 32px;
+    font-family: 'Space Grotesk', Arial, sans-serif;
+    background: black;
+    color: white;
+}
+
+@media (max-aspect-ratio: 5/4) {
+    body {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+h1,
+h2,
+button,
+label,
+input,
+#gallery p {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    margin-bottom: 16px;
+}
+
+h1,
+h1 + p {
+    text-align: center;
+}
+
+h1 + p {
+    font-size: large;
+    padding: 4px;
+    background: rgb(8, 8, 8);
+}
+
+h1 + p
+h1 + p + p {
+    text-wrap: balance;
+}
+
+h1 + p + p {
+    margin: 16px 32px 64px 0;
+    text-align: end;
+}
+
+h1 + p + p span {
+    padding: 4px;
+    background: rgb(8, 8, 8);
+}
+
+a {
+    color: oklch(1 0.4 190);
+}
+
+a:hover {
+    color: oklch(1 0.4 140);
+}
+
+a:visited {
+    color: oklch(0.5 0.4 325);
+}
+
+#options label {
+    font-style: italic;
+}
+
+#gallery {
+    border-bottom: 4px solid white;
+    padding-bottom: 16px;
+}
+
+#gallery a {
+    color: white;
+}
+
+#gallery h2 {
+    margin-bottom: 16px;
+}
+
+#gallery ul,
+#clipboard {
+    scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
+}
+
+#gallery ul {
+    flex-wrap: wrap;
+    gap: 20px;
+    max-height: calc(20.8em + 80px);
+    overflow: auto;
+    min-height: 3.5em;
+    border-left: 4px solid white;
+    border-right: 4px dashed blue;
+    padding: 0 16px;
+}
+
+#gallery ul.empty::after {
+    content: 'Image gallery is empty.';
+    margin: auto;
+    font-style: italic;
+    color: lightgrey;
+}
+
+#gallery li,
+#gallery a {
+    width: 10em;
+    height: calc(10.4em + 8px);
+}
+
+#gallery a {
+    display: block;
+}
+
+#gallery a:hover,
+#gallery>div.flex>div.relative {
+    cursor: pointer;
+}
+
+#gallery>div.flex>div.relative>input,
+#gallery>div.flex>div.relative>div.absolute {
+    pointer-events: none;
+}
+
+#gallery li div:first-child {
+    height: 7em;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#gallery li div:last-child {
+    height: calc(2.9em + 8px);
+    background: rgb(8, 8, 8);
+    padding: 0.4em;
+}
+
+#gallery img {
+    object-fit: contain;
+}
+
+@supports (line-clamp: 2) {
+    #gallery p {
+        line-clamp: 2;
+    }
+}
+
+@supports not (line-clamp: 2) {
+    #gallery p {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+    }
+}
+
+#gallery>div:last-child {
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+#gallery>div:last-child>div:first-child {
+    width: 5ch;
+    height: 2em;
+}
+
+#load-example-image+label {
+    font-size: small;
+    margin-left: 8px;
+}
+
+*:has(> #add-files) {
+    color: black;
+    background: white;
+    font-weight: bold;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+#add-files {
+    opacity: 0;
+}
+
+*:has(> #add-files).reveal {
+    pointer-events: all;
+    visibility: visible;
+    animation: reveal 2s linear;
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#drop-zone {
+    margin: 16px 0;
+    height: 80vh;
+    overflow: hidden;
+}
+
+.marching-ants {
+    animation: march 4s linear infinite;
+}
+
+@keyframes march {
+    from {
+        stroke-dashoffset: 0
+    }
+
+    to {
+        stroke-dashoffset: -128
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#marching-ant-gradient {
+    background: conic-gradient(from var(--angle),
+    oklch(0.25 0 0), oklch(1 0 0));
+    animation: rotate 16s linear infinite;
+
+    mask-image: url(#dashMask);
+
+    @supports not (mask-image: url(#dashMask)) {
+        -webkit-mask-image: url(#dashMask)
+    }
+}
+
+@keyframes rotate {
+    to {
+        --angle: 360deg
+    }
+}
+
+[for="drag-n-drop"] {
+    font-size: x-large;
+}
+
+#drag-n-drop {
+    opacity: 0;
+}
+
+#viewports {
+    grid-template: 50% 50% / 75% 25%;
+}
+
+#image-viewer {
+    grid-row: span 2;
+    cursor: pointer;
+}
+
+#recent-colors {
+    grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+}
+
+#recent-colors div:first-child {
+    grid-area: span 2 / span 2;
+}
+
+#recent-colors>div:hover {
+    scale: 1.5;
+}
+
+@media (height < 400px) and (width < 700px) {
+    #recent-colors {
+        grid-template: repeat(4, 1fr) / repeat(4, 1fr);
+    }
+}
+
+#options {
+    margin: 1em 0;
+    border-top: 4px solid white;
+    padding-top: 16px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+#options>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+#output h2,
+#sampling-frequency {
+    text-align: center;
+}
+
+#sampling-frequency {
+    box-sizing: content-box;
+    width: 4em;
+    border-radius: 2.5px;
+}
+
+#output h2 {
+    margin-bottom: 16px;
+}
+
+#output>div {
+    justify-content: space-around;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+#output>div>div:first-child
+{
+    padding: 8px 12px;
+    border: 4px dashed white;
+    max-width: 64em;
+    flex-direction: column;
+    flex-grow: 3;
+}
+
+#output>div>div>div {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+#output>div>div>div>div {
+    align-items: center;
+    gap: 16px;
+}
+
+#copy {
+    width: fit-content;
+    height: fit-content;
+    padding: 2px 3px;
+    border: 2px solid white;
+    font-weight: bolder;
+    translate: -1px -2px;
+}
+
+#copy.copied {
+    background: black;
+    color: white;
+    border: 2px solid lime;
+}
+
+*:has(> #copy) p {
+    translate: 0 -2px;
+}
+
+*:has(> #clipboard)>div>p {
+    translate: 0 -1px;
+}
+
+#clipboard {
+    border-right: 1px solid white;
+    padding-right: 20px;
+    min-height: 5em;
+    max-height: calc(31.5em);
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#clipboard.empty::after {
+    margin: auto;
+    content: 'Color clipboard is empty.';
+    color: lightgrey;
+}
+
+#clipboard li {
+    height: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#clipboard li {
+    margin: 4px 0;
+}
+
+#clipboard li:nth-child(5n) {
+    background: linear-gradient(to right, navy, blue);
+}
+
+#clipboard code {
+    font-size: large;
+}
+
+#clipboard div {
+    width: 1em;
+    height: 100%;
+    border: 1px dotted white;
+}
+
+#clipboard div:hover {
+    border: none;
+    scale: 1.5;
+}
+
+*:has(> #download) {
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    gap: 16px;
+}
+
+#download {
+    box-sizing: content-box;
+    color: white;
+    font-weight: bolder;
+    width: 8em;
+    height: 2em;
+    padding: 4px;
+    border: 4px solid transparent;
+    background:
+        linear-gradient(black) padding-box,
+        linear-gradient(to right, lime, green) border-box;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@property --hue-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#download:hover {
+    border-color: transparent;
+    background:
+        linear-gradient(black) padding-box,
+        conic-gradient(from var(--angle),
+            oklch(1 0.4 30),
+            oklch(1 0.4 67.5) 30deg,
+            oklch(1 0.4 135) 60deg,
+            oklch(1 0.4 127.5) 120deg,
+            oklch(1 0.4 255) 180deg,
+            oklch(1 0.4 15) 240deg,
+            oklch(1 0.4 30) 300deg) border-box;
+    filter: hue-rotate(var(--hue-angle));
+    animation: rotate-gradient 4s linear infinite, rotate-hue 2s linear infinite;
+}
+
+#download.inactive {
+    background:
+        linear-gradient(black) padding-box,
+        linear-gradient(to right, darkgrey, grey) border-box;
+}
+
+@keyframes rotate-gradient {
+    to {
+        --angle: 360deg
+    }
+}
+
+@keyframes rotate-hue {
+    to {
+        --hue-angle: 360deg
+    }
+}
+
+footer {
+    margin-top: 64px;
+    padding: 16px;
+    background: darkblue;
+}
+
+footer > *:not(:last-child) {
+    margin-bottom: 4px;
+}
+
+footer > a {
+    translate: 0 -1px;
+}
+
+summary {
+    list-style: none;
+}
+
+summary::before {
+    color: red;
+    margin-right: 8px;
+    content: '+';
+}
+
+details[open] summary::before {
+    color: white;
+    display: inline-block;
+    translate: 0 -1px;
+    content: '-';
+}
+
+details[open] summary {
+    margin-bottom: 4px;
+}
+
+details[open] summary span {
+    background: #006161;
+}

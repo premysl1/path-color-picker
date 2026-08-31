@@ -1,0 +1,65 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    hyphens: auto;
+}
+
+*:not(dialog) {
+    margin: 0;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    text-wrap: balance;
+}
+
+audio, img, picture, svg, video, canvas, iframe, embed, object {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+button {
+    cursor: pointer;
+}
+
+button, details {
+    user-select: none;
+}
+
+button, fieldset {
+    border: none;
+}
+
+input, button, textarea, select, ul, li {
+    font: inherit;
+}
+
+li {
+    list-style: none;
+}
+
+input[type="range"] {
+    cursor: grab;
+}
+
+input[type="range"]:active {
+    cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: smooth;
+    }
+}

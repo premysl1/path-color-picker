@@ -1,0 +1,35 @@
+make image gallery droppable
+consider changing img variable names for more appropriate that capture other
+image formats
+fix my svg not being visible
+validate gallery layout calculations
+fix firefox behavior
+add color removal: single color and whole list
+
+// DONE
+write intro
+make button not glow when there are no color samples
+customize the input file into a button
+crosshair doens't show when sampling sometimes
+fix buttons cursor
+#more files text is broken
+change add more files display none on first image render
+clipboard output
+add a message when it's empty 
+.txt output
+write a footer
+NO move scrollbar of the ul element "visually", so that it is directly next to the outer scrollbar
+color picker history
+move image gallery right above the canvas
+make background work while new images are added as input
+save a user reference to not an example image 
+figure out example image handling user experience handling
+change left top to inset
+load example image only on checkbox true
+disable or enable canvas only when not done already
+sampling frequency setting
+path color picking
+scope
+panning and zooming of the canvas
+background change
+disable image smoothing for every viewport
