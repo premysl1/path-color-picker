@@ -273,20 +273,20 @@ a:visited {
     cursor: pointer;
 }
 
-#recent-colors {
+#recent-clrs {
     grid-template: repeat(8, 1fr) / repeat(8, 1fr);
 }
 
-#recent-colors div:first-child {
+#recent-clrs div:first-child {
     grid-area: span 2 / span 2;
 }
 
-#recent-colors>div:hover {
+#recent-clrs>div:hover {
     scale: 1.5;
 }
 
 @media (height < 400px) and (width < 700px) {
-    #recent-colors {
+    #recent-clrs {
         grid-template: repeat(4, 1fr) / repeat(4, 1fr);
     }
 }

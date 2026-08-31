@@ -205,8 +205,8 @@ function preventContextmenu(elmnts)
         elmnts[i].addEventListener(`contextmenu`, e => e.preventDefault());
     }
 }
-const recentColors = document.getElementById(`recent-colors`);
-preventContextmenu([imageViewer, scope, recentColors]);
+const recentClrs = document.getElementById(`recent-clrs`);
+preventContextmenu([imageViewer, scope, recentClrs]);
 
 let currentImg;
 let fitScale = 1;
@@ -329,7 +329,7 @@ function getPixelsFromLine(x0, y0, x1, y1)
 }
 
 // color format setting
-const colorFormatSelect = document.getElementById(`color-format`);
+const clrFormatSelect = document.getElementById(`clr-format`);
 
 // color conversion math
 const LRGB_LMS_MATRIX = [
@@ -383,24 +383,24 @@ function rgbToHEXText(c) {
   return `#${intToHex(c.r)}${intToHex(c.g)}${intToHex(c.b)}`;
 }
 
-function rgbaToHEXAText(color) {
-  const hexText = rgbToHEXText(color);
-  if (color.alpha === undefined || color.alpha >= 1.0) {
+function rgbaToHEXAText(clr) {
+  const hexText = rgbToHEXText(clr);
+  if (clr.alpha === undefined || clr.alpha >= 1.0) {
     return hexText;
   }
-  const alpha = intToHex(color.alpha * 255);
+  const alpha = intToHex(clr.alpha * 255);
   return `${hexText}${alpha}`;
 }
 
-function rgbaToRGBText(color) {
-  const alpha = color.alpha !== undefined ? color.alpha : 1.0;
-  return `rgb(${Math.round(color.r)} ${Math.round(color.g)} ${Math.round(color.b)}${
+function rgbaToRGBText(clr) {
+  const alpha = clr.alpha !== undefined ? clr.alpha : 1.0;
+  return `rgb(${Math.round(clr.r)} ${Math.round(clr.g)} ${Math.round(clr.b)}${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function rgbaToHSLA(color) {
-  let { r, g, b, alpha = 1.0 } = color;
+function rgbaToHSLA(clr) {
+  let { r, g, b, alpha = 1.0 } = clr;
   r /= 255;
   g /= 255;
   b /= 255;
@@ -432,23 +432,23 @@ function rgbaToHSLA(color) {
   return { h, s, l, alpha };
 }
 
-function toHSLAText(color) {
-  const { h, s, l, alpha = 1.0 } = rgbaToHSLA(color);
+function toHSLAText(clr) {
+  const { h, s, l, alpha = 1.0 } = rgbaToHSLA(clr);
   return `hsl(${h.toFixed(0)} ${s.toFixed(0)}% ${l.toFixed(0)}%${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function rgbaToHWBAText(color) {
-  let { h, s, l, alpha = 1.0 } = rgbaToHSLA(color);
+function rgbaToHWBAText(clr) {
+  let { h, s, l, alpha = 1.0 } = rgbaToHSLA(clr);
   const chroma = (s / 100) * (1 - Math.abs((2 * l) / 100 - 1));
   let W = Math.round(l - (chroma * 100) / 2);
   let B = Math.round(100 - l - (chroma * 100) / 2);
   return `hwb(${h} ${W}% ${B}%${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToXYZD50(color) {
-  let { r, g, b, alpha = 1.0 } = color;
+function rgbaToXYZD50(clr) {
+  let { r, g, b, alpha = 1.0 } = clr;
   r = rgbToLinear(r / 255) * 255;
   g = rgbToLinear(g / 255) * 255;
   b = rgbToLinear(b / 255) * 255;
@@ -457,16 +457,16 @@ function rgbaToXYZD50(color) {
   return { x: xyz[0] / 255, y: xyz[1] / 255, z: xyz[2] / 255, alpha };
 }
 
-function rgbaToXYZD50Text(color) {
-  let { alpha = 1.0 } = color;
-  const xyz = rgbaToXYZD50(color);
+function rgbaToXYZD50Text(clr) {
+  let { alpha = 1.0 } = clr;
+  const xyz = rgbaToXYZD50(clr);
   return `color(xyz-d50 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToXYZD65(color) {
-  let { r, g, b, alpha = 1.0 } = color;
+function rgbaToXYZD65(clr) {
+  let { r, g, b, alpha = 1.0 } = clr;
   r = rgbToLinear(r / 255) * 255;
   g = rgbToLinear(g / 255) * 255;
   b = rgbToLinear(b / 255) * 255;
@@ -475,16 +475,16 @@ function rgbaToXYZD65(color) {
   return { x: xyz[0] / 255, y: xyz[1] / 255, z: xyz[2] / 255, alpha };
 }
 
-function rgbaToXYZD65Text(color) {
-  let { alpha = 1.0 } = color;
-  const xyz = rgbaToXYZD65(color);
+function rgbaToXYZD65Text(clr) {
+  let { alpha = 1.0 } = clr;
+  const xyz = rgbaToXYZD65(clr);
   return `color(xyz-d65 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function xyzToLab(color) {
-  let { x, y, z, alpha = 1.0 } = color;
+function xyzToLab(clr) {
+  let { x, y, z, alpha = 1.0 } = clr;
   [x, y, z] = [x, y, z].map((v, i) => {
     v /= D65[i];
     return v > 0.0088564516 ? Math.cbrt(v) : v * 903.2962962962963 + 16 / 116;
@@ -492,17 +492,17 @@ function xyzToLab(color) {
   return { l: 116 * y - 16, a: 500 * (x - y), b: 200 * (y - z), alpha };
 }
 
-function rgbaToLabText(color) {
-  let { alpha = 1.0 } = color;
-  const xyz = rgbaToXYZD50(color);
+function rgbaToLabText(clr) {
+  let { alpha = 1.0 } = clr;
+  const xyz = rgbaToXYZD50(clr);
   const lab = xyzToLab(xyz);
   return `lab(${lab.l.toFixed(3)} ${lab.a.toFixed(3)} ${lab.b.toFixed(3)}${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function rgbToOklab(color) {
-  let { r, g, b, alpha = 1.0 } = color;
+function rgbToOklab(clr) {
+  let { r, g, b, alpha = 1.0 } = clr;
   r = rgbToLinear(r / 255);
   g = rgbToLinear(g / 255);
   b = rgbToLinear(b / 255);
@@ -514,16 +514,16 @@ function rgbToOklab(color) {
   return { l: oklab[0], a: oklab[1], b: oklab[2], alpha };
 }
 
-function toOkLabText(color) {
-  let { alpha = 1.0 } = color;
-  const oklab = rgbToOklab(color);
+function toOkLabText(clr) {
+  let { alpha = 1.0 } = clr;
+  const oklab = rgbToOklab(clr);
   return `oklab(${oklab.l.toFixed(5)} ${oklab.a.toFixed(5)} ${oklab.b.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function labToLCH(color) {
-  const { l, a, b, alpha = 1.0 } = color;
+function labToLCH(clr) {
+  const { l, a, b, alpha = 1.0 } = clr;
   const c = Math.sqrt(a * a + b * b);
   let h = Math.atan2(b, a) * (180 / Math.PI);
   if (h < 0) {
@@ -532,9 +532,9 @@ function labToLCH(color) {
   return { l, c, h, alpha };
 }
 
-function toLCHText(color) {
-  let { alpha = 1.0 } = color;
-  const xyz = rgbaToXYZD50(color);
+function toLCHText(clr) {
+  let { alpha = 1.0 } = clr;
+  const xyz = rgbaToXYZD50(clr);
   const lab = xyzToLab(xyz);
   const lch = labToLCH(lab);
   return `lch(${lch.l.toFixed(3)} ${lch.c.toFixed(3)} ${lch.h.toFixed(3)}${
@@ -542,57 +542,57 @@ function toLCHText(color) {
   })`;
 }
 
-function rgbaToOkLCh(color) {
-  const lab = rgbToOklab(color);
+function rgbaToOkLCh(clr) {
+  const lab = rgbToOklab(clr);
   const oklch = labToLCH(lab);
-  return { l: oklch.l, c: oklch.c, h: oklch.h, alpha: color.alpha !== undefined ? color.alpha : 1.0 };
+  return { l: oklch.l, c: oklch.c, h: oklch.h, alpha: clr.alpha !== undefined ? clr.alpha : 1.0 };
 }
 
-function toOkLChText(color) {
-  let { alpha = 1.0 } = color;
-  const oklch = rgbaToOkLCh(color);
+function toOkLChText(clr) {
+  let { alpha = 1.0 } = clr;
+  const oklch = rgbaToOkLCh(clr);
   return `oklch(${oklch.l.toFixed(5)} ${oklch.c.toFixed(5)} ${oklch.h.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToColorSRGBText(color) {
-  const alpha = color.alpha !== undefined ? color.alpha : 1.0;
-  return `color(srgb ${(color.r / 255).toFixed(3)} ${(color.g / 255).toFixed(3)} ${(color.b / 255).toFixed(3)}${
+function rgbaToClrSRGBText(clr) {
+  const alpha = clr.alpha !== undefined ? clr.alpha : 1.0;
+  return `color(srgb ${(clr.r / 255).toFixed(3)} ${(clr.g / 255).toFixed(3)} ${(clr.b / 255).toFixed(3)}${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function formatColor(color, format = `OKLCH`) {
+function formatClr(clr, format = `OKLCH`) {
     switch (format) {
-        case `OKLCH`: return toOkLChText(color);
-        case `HEX`: return rgbaToHEXAText(color);
-        case `RGB`: return rgbaToRGBText(color);
+        case `OKLCH`: return toOkLChText(clr);
+        case `HEX`: return rgbaToHEXAText(clr);
+        case `RGB`: return rgbaToRGBText(clr);
         case `SRGB`:
         case `sRGB`:
-        case `color(srgb)`: return rgbaToColorSRGBText(color);
-        case `HSL`: return toHSLAText(color);
-        case `LAB`: return rgbaToLabText(color);
-        case `LCH`: return toLCHText(color);
-        case `OKLAB`: return toOkLabText(color);
-        case `XYZ D50`: return rgbaToXYZD50Text(color);
-        case `XYZ D65`: return rgbaToXYZD65Text(color);
-        default: return toOkLChText(color);
+        case `color(srgb)`: return rgbaToClrSRGBText(clr);
+        case `HSL`: return toHSLAText(clr);
+        case `LAB`: return rgbaToLabText(clr);
+        case `LCH`: return toLCHText(clr);
+        case `OKLAB`: return toOkLabText(clr);
+        case `XYZ D50`: return rgbaToXYZD50Text(clr);
+        case `XYZ D65`: return rgbaToXYZD65Text(clr);
+        default: return toOkLChText(clr);
     }
 }
 
 function samplePixelAtCoords(sx, sy, updateHistory = false)
 {
     const rgba = ctxIV.getImageData(sx, sy, 1, 1).data;
-    const colorObj = {
+    const clrObj = {
         r: rgba[0],
         g: rgba[1],
         b: rgba[2],
         alpha: rgba[3] / 255
     };
-    const formattedColor = formatColor(colorObj, colorFormatSelect.value);
-    recentColorsFields[0].style.backgroundColor = formattedColor;
-    if (updateHistory) updateRecentColorsFields(formattedColor);
+    const formattedClr = formatClr(clrObj, clrFormatSelect.value);
+    recentClrsFields[0].style.backgroundColor = formattedClr;
+    if (updateHistory) updateRecentClrsFields(formattedClr);
 }
 
 function processSampling(e)
@@ -683,7 +683,7 @@ imageViewer.addEventListener(`pointerdown`, e =>
 imageViewer.addEventListener(`pointermove`, e =>
 {
     renderScope(e);
-    paintRecentColorsFields(e);
+    paintRecentClrsFields(e);
 
     if (isSampling) {
         processSampling(e);
@@ -805,60 +805,60 @@ function renderScope(e)
 }
 
 // sampled colors + recent colors
-const sampledColors = [];
-let isSampledColorsUpdated = false;
-function stringifySampledColors() {
-    return sampledColors.toReversed().join(`\n`);
+const sampledClrs = [];
+let isSampledClrsUpdated = false;
+function stringifySampledClrs() {
+    return sampledClrs.toReversed().join(`\n`);
 }
 
-const recentColorsFields = document.querySelectorAll(`#recent-colors > div`);
-const recentColorsFieldsN = 60;
+const recentClrsFields = document.querySelectorAll(`#recent-clrs > div`);
+const recentClrsFieldsN = 60;
 
-function paintRecentColorsFields(e, updateRecentColorsFields = false)
+function paintRecentClrsFields(e, updateRecentClrsFields = false)
 {
     if (!currentImg) return;
     const coords = getPixelCoords(e);
     if (!coords) return;
-    samplePixelAtCoords(coords.sx, coords.sy, updateRecentColorsFields);
+    samplePixelAtCoords(coords.sx, coords.sy, updateRecentClrsFields);
 }
 
 const clipboard = document.getElementById(`clipboard`);
-const colorsCounter = document.querySelector(`div:has(> #clipboard)>div>p`);
+const clrsCounter = document.querySelector(`div:has(> #clipboard)>div>p`);
 const outputSection = document.getElementById(`output`);
-function updateRecentColorsFields(color)
+function updateRecentClrsFields(clr)
 {
-    sampledColors.unshift(color);
+    sampledClrs.unshift(clr);
     download.classList.remove(`inactive`);
-    if (sampledColors.length > 0) {
+    if (sampledClrs.length > 0) {
         clipboard.classList.remove(`empty`);
     }
-    for (let i = 0; i < recentColorsFieldsN - 1; i++) {
-        recentColorsFields[i + 1].style.backgroundColor = sampledColors[i];
+    for (let i = 0; i < recentClrsFieldsN - 1; i++) {
+        recentClrsFields[i + 1].style.backgroundColor = sampledClrs[i];
     }
-    const description = colorsCounter.innerText.slice(0, 15);
-    colorsCounter.innerText = description + ` ` + sampledColors.length;
-    addColorsToClipboard(color);
-    isSampledColorsUpdated = true;
+    const description = clrsCounter.innerText.slice(0, 15);
+    clrsCounter.innerText = description + ` ` + sampledClrs.length;
+    addClrsToClipboard(clr);
+    isSampledClrsUpdated = true;
 }
-function addColorsToClipboard(color)
+function addClrsToClipboard(clr)
 {
     const li = document.createElement(`li`);
     const code = document.createElement(`code`);
     const div = document.createElement(`div`);
 
-    code.textContent = color;
-    div.style.background = `linear-gradient(${color}) padding-box`;
+    code.textContent = clr;
+    div.style.background = `linear-gradient(${clr}) padding-box`;
     li.append(code, div);
     clipboard.prepend(li);
     li.setAttribute(`tabindex`, `0`)
 }
 
-function clearRecentColors()
-{
-    for (let i = 0; i < recentColorsFieldsN; i++) {
-        recentColorsFields[i].style.backgroundColor = `initial`;
-    }
-}
+//function clearRecentClrs()
+//{
+//    for (let i = 0; i < recentClrsFieldsN; i++) {
+//        recentClrsFields[i].style.backgroundColor = `initial`;
+//    }
+//}
 
 // load example image on user preference
 function loadAndRenderExampleImage(path)
@@ -900,7 +900,7 @@ loadExampleImageInput.addEventListener(`change`, () =>
 });
 
 // image background change
-const imageBgClrInput = document.getElementById(`background-color`);
+const imageBgClrInput = document.getElementById(`bg-clr`);
 imageBgClrInput.addEventListener(`change`, e =>
 {
     if (isSamplingInit) imageViewer.style.backgroundColor = e.target.value;
@@ -934,10 +934,10 @@ copy.addEventListener(`click`, () =>
         }
     }
 
-    if (sampledColors.length > 0) {
-        const str = stringifySampledColors();
+    if (sampledClrs.length > 0) {
+        const str = stringifySampledClrs();
         writeClipboardText(str);
-        isSampledColorsUpdated = false;
+        isSampledClrsUpdated = false;
     }
 });
 
@@ -945,8 +945,8 @@ copy.addEventListener(`click`, () =>
 const download = document.getElementById(`download`);
 download.addEventListener(`click`, () =>
 {
-    if (sampledColors.length > 0) {
-        const blob = new Blob([stringifySampledColors()], {type: `text/plain`});
+    if (sampledClrs.length > 0) {
+        const blob = new Blob([stringifySampledClrs()], {type: `text/plain`});
         const a = document.createElement(`a`);
         const url = URL.createObjectURL(blob);
         a.href = url;

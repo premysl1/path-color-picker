@@ -36,7 +36,7 @@
         <div id="viewports" class="wh_100 bslt grid">
             <canvas id="image-viewer"></canvas>
             <canvas id="scope"></canvas>
-            <div id="recent-colors" class="grid">
+            <div id="recent-clrs" class="grid">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -124,8 +124,8 @@
             <input id="sampling-frequency" type="number" min="1" value="50">
         </div>
         <div>
-            <label for="color-format">Color format:</label>
-            <select name="formats" id="color-format" value="RGB">
+            <label for="clr-format">Color format:</label>
+            <select id="clr-format">
                 <option value="RGB">RGB</option>
                 <option value="SRGB">sRGB</option>
                 <option value="HEX">HEX</option>
@@ -140,7 +140,7 @@
         </div>
         <div>
             <label for="bg-clr">Background color:</label>
-            <input id="background-color" type="color" value="#0f003c">
+            <input id="bg-clr" type="color" value="#0f003c">
         </div>
     </div>
     <main id="output">
@@ -172,7 +172,7 @@
         <a class="nln_blck" href="https://github.com/premysl1/Path-color-sampler">Source code</a>
         <details>
             <summary><span>Attributions</span></summary>
-            <p class="attribution">"<a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02/5347002633">Reflections (11/365)</a>" by <a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02">LifeSupercharger</a> is licensed under <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/2.0/?ref=openverse">CC BY 2.0 <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="height: 1em; margin-right: 0.125em; display: inline;" /><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="height: 1em; margin-right: 0.125em; display: inline;" /></a>.</p>
+            <p class="attribution">"<a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02/5347002633">Reflections (11/365)</a>" by <a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02">LifeSupercharger</a> is licensed under <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/2.0/?ref=openverse">CC BY 2.0 <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="height: 1em; margin-right: 0.125em; display: inline"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="height: 1em; margin-right: 0.125em; display: inline"></a>.</p>
         </details>
     </footer>
     <script src="script.js"></script>
