@@ -9,172 +9,240 @@
     <link href="./style.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Path color sampler</h1>
-    <p>Extract colors by drawing any path across an image with your cursor.<br>
-    Supports: RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ D50, LCH, LAB
-    + panning and zooming + setting sampling frequency</p>
-    <p><span>Sample using the left-click button, or right-click to pan.</span></p>
-    <div id="gallery">
-        <h2>Image gallery</h2>
-        <ul class="flx empty"></ul>
-        <div class="flx">
-            <div class="rltv">
-                <div class="bslt nst">
-                    <label class="flx_cntr wh_100" for="add-files">ADD</label>
+    <div>
+        <div id="intro">
+            <section>
+                <h1>Path color sampler</h1>
+                <p>Extract colors by drawing any path across an image with your cursor.</p>
+            </section>
+            <section>
+                <h2>Supports</h2>
+                <ul>
+                    <li><span style="color: red">+</span> RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ D50, LCH, LAB</li>
+                    <li><span style="color: lime">+</span> path sampling</li>
+                    <li><span style="color: cyan">+</span> panning and zooming</li>
+                    <li><span style="color: blue">+</span> adjustable sampling frequency</li>
+                </ul>
+            </section>
+            <p><span>?</span> Start sampling using the left-click button (hold and move your mouse to sample a path), or right-click to pan.</p>
+        </div>
+        <main class="flx">
+            <section class="flx flx_drctn_clmn">
+                <div class="options top-group">
+                    <button id="clear-canvas">
+                        <span>CLEAR canvas</span>
+                    </button>
+                    <button id="delete-samples">
+                        <span>DELETE samples</span>
+                    </button>
                 </div>
-                <input id="add-files" class="bslt nst
-                wh_100" type="file" multiple accept="image/*">
-            </div>
-            <div class="flx lgn_tms_cntr">
-                <input id="load-example-image" type="checkbox">
-                <label for="load-example-image">
-                Show an example image when page loads.</label>
-            </div>
-        </div>
-    </div>
-    <div id="drop-zone" class="grid_center rltv">
-        <div id="viewports" class="wh_100 bslt grid">
-            <canvas id="image-viewer"></canvas>
-            <canvas id="scope"></canvas>
-            <div id="recent-clrs" class="grid">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </div>
-        <div id="marching-ant-gradient" class="bslt wh_97d5"></div>
-        <svg width=97.5% height=97.5%
-        xmlns="http://www.w3.org/2000/svg">
-            <mask id="dashMask">
-                <rect class="marching-ants" x="4" y="4"
-                width="calc(100% - 8px)" height="calc(100% - 8px)"
-                rx="20" ry="20"
-                stroke-width="8"
-                stroke-dasharray="0 64 0"
-                pathLength="3840"
-                stroke="white"></rect>
-            </mask>
-        </svg>
-        <label class="bslt" for="drag-n-drop">
-        Drop images here, or click to pick images.</label>
-        <input id="drag-n-drop" class="wh_100 bslt" type="file"
-        multiple accept="image/*">
-    </div>
-    <div id="options" class="flx">
-        <div>
-            <label for="sampling-frequency">Sampling frequency:</label>
-            <input id="sampling-frequency" type="number" min="1" value="50">
-        </div>
-        <div>
-            <label for="clr-format">Color format:</label>
-            <select id="clr-format">
-                <option value="RGB">RGB</option>
-                <option value="SRGB">sRGB</option>
-                <option value="HEX">HEX</option>
-                <option value="OKLCH">OKLCH</option>
-                <option value="OKLAB">OKLAB</option>
-                <option value="HSL">HSL</option>
-                <option value="XYZ D65">XYZ D65</option>
-                <option value="XYZ D50">XYZ D50</option>
-                <option value="LCH">LCH</option>
-                <option value="LAB">LAB</option>
-            </select>
-        </div>
-        <div>
-            <label for="bg-clr">Background color:</label>
-            <input id="bg-clr" type="color" value="#0f003c">
-        </div>
-    </div>
-    <main id="output">
-        <h2>Output:</h2>
-        <div class="flx">
-            <div class="flx">
-                <div class="flx">
+                <div id="sampling-screen" class="grd_cntr rltv">
+                    <div id="viewports" class="wh_100 bslt grd">
+                        <div>
+                            <canvas id="image-viewer" class="wh_100"></canvas>
+                        </div>
+                        <div id="scope" class="grd">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div id="recent-clrs" class="grd">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div id="input-img-screen" class="grd_cntr wh_100">
+                        <div id="marching-ant-gradient" class="bslt wh_97d5">
+                        </div>
+                        <svg class="bslt"
+                        width="97.5%"
+                        height="97.5%" xmlns="http://www.w3.org/2000/svg">
+                            <mask id="dash-mask">
+                                <rect class="marching-ants"
+                                x="4"
+                                y="4"
+                                width="calc(100% - 8px)"
+                                height="calc(100% - 8px)"
+                                rx="20"
+                                ry="20"
+                                stroke-width="8"
+                                stroke-dasharray="0 64 0"
+                                pathLength="3840"
+                                stroke="white"></rect>
+                            </mask>
+                        </svg>
+                        <label for="drag-n-drop">
+                        Drop image here, or click to pick an image.</label>
+                        <input id="drag-n-drop" class="wh_100 bslt"
+                        type="file" accept="image/*">
+                    </div>
+                </div>
+                <div class="options bottom-group">
+                    <div>
+                        <label for="sampling-frequency">
+                            Sampling frequency:</label>
+                        <input id="sampling-frequency"
+                        type="number" min="1" value="50">
+                    </div>
+                    <div>
+                        <label for="clr-format">Color format:</label>
+                        <select id="clr-format">
+                            <option value="RGB">RGB</option>
+                            <option value="sRGB">sRGB</option>
+                            <option value="HEX">HEX</option>
+                            <option value="OKLCH">OKLCH</option>
+                            <option value="OKLAB">OKLAB</option>
+                            <option value="HSL">HSL</option>
+                            <option value="XYZ D65">XYZ D65</option>
+                            <option value="XYZ D50">XYZ D50</option>
+                            <option value="HWB">HWB</option>
+                            <option value="LCH">LCH</option>
+                            <option value="LAB">LAB</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Background color:</label>
+                        <div class="flx">
+                            <input id="image-viewer-bg-clr"
+                            type="color" value="#0f003c">
+                            <input id="image-viewer-bg-clr-two"
+                            type="color">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="output" class="flx flx_drctn_clmn lgn_tms_cntr">
+                <div class="flx w_100">
                     <div class="flx">
-                        <p>As a text string:</p>
+                        <p>colors = <span id="counter">0</span></p>
                         <button id="copy">COPY</button>
                     </div>
-                    <p>No. of colors: 0</p>
+                    <ul id="clipboard" class="empty flx"></ul>
                 </div>
-                <ul id="clipboard" class="empty flx"></ul>
-            </div>
+                <div class="flx lgn_tms_cntr">
+                    <p>As a <code>.txt</code> file:</p>
+                    <button id="download">DOWNLOAD</button>
+                </div>
+            </section>
+        </main>
+        <footer class="flx">
             <div class="flx">
-                <p>As a <code>.txt</code> file:</p>
-                <button id="download" class="inactive">DOWNLOAD</button>
+                <details>
+                    <summary>
+                        <span>Do you send or have access to my images?</span>
+                    </summary>
+                    <p>No. The code of this website,
+                    merely reconstructs user-inputted images into user's browser.
+                    After this page loads, there are no network requests made.</p>
+                </details>
+                <a class="nln_blck"
+                href="https://github.com/premysl1/Path-color-sampler">Source code</a>
+                <details>
+                    <summary><span>Attributions</span></summary>
+                    <p class="attribution">"<a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02/5347002633">Reflections (11/365)</a>" by <a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02">LifeSupercharger</a> is licensed under <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/2.0/?ref=openverse">CC BY 2.0 <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="height: 1em; margin-right: 0.125em; display: inline"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="height: 1em; margin-right: 0.125em; display: inline"></a>.</p>
+                </details>
             </div>
-        </div>
-    </main>
-    <footer>
-        <details>
-            <summary><span>Do you send or have access to my images?</span></summary>
-            No. The code on this website,
-            merely reconstructs user-inputted images into user's browser.
-            After this page loads, there are no network requests made.
-        </details>
-        <a class="nln_blck" href="https://github.com/premysl1/Path-color-sampler">Source code</a>
-        <details>
-            <summary><span>Attributions</span></summary>
-            <p class="attribution">"<a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02/5347002633">Reflections (11/365)</a>" by <a rel="noopener noreferrer" href="https://www.flickr.com/photos/8047705@N02">LifeSupercharger</a> is licensed under <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/2.0/?ref=openverse">CC BY 2.0 <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="height: 1em; margin-right: 0.125em; display: inline"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="height: 1em; margin-right: 0.125em; display: inline"></a>.</p>
-        </details>
-    </footer>
+            <p id="load-example-img">LOAD EXAMPLE IMAGE</p>
+        </footer>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

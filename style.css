@@ -2,71 +2,62 @@ html {
     scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
 }
 
-@font-face {
-    font-family: 'Space Grotesk';
-    src: url('./SpaceGrotesk[wght].woff2') format('woff2');
-    font-weight: 300 700;
-    font-display: swap;
-}
-
 body {
-    margin: 64px 20% 32px;
-    font-family: 'Space Grotesk', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     background: black;
     color: white;
 }
 
-@media (max-aspect-ratio: 5/4) {
-    body {
-        margin-left: 10%;
-        margin-right: 10%;
-    }
+/* CSS: 10% = JS: horizontalMarginOffset */
+body > div {
+    padding: 10%;
 }
 
-h1,
-h2,
-button,
-label,
-input,
-#gallery p {
-    font-family: Arial, sans-serif;
-}
-
-h1 {
+#intro {
+    padding: 32px;
     margin-bottom: 16px;
+    border: 1px solid dimgrey;
+    background: linear-gradient(to right, black, #102020, black);
+    background-size: 200% 100%;
+    animation: slide 6s infinite;
 }
 
-h1,
-h1 + p {
+@keyframes slide {
+    from { background-position: 0% 0%; }
+    to   { background-position: -200% 0%; }
+}
+
+h1, h1 + p {
     text-align: center;
 }
 
-h1 + p {
+h1 {
+    margin-bottom: 8px;
+}
+
+:has(> h1) {
+    margin-bottom: 16px;
+}
+
+h2 {
     font-size: large;
-    padding: 4px;
-    background: rgb(8, 8, 8);
+    margin-bottom: 16px;
 }
 
-h1 + p
-h1 + p + p {
-    text-wrap: balance;
+#intro > :last-child {
+    margin-top: 16px;
+    font-style: italic;
 }
 
-h1 + p + p {
-    margin: 16px 32px 64px 0;
-    text-align: end;
-}
-
-h1 + p + p span {
-    padding: 4px;
-    background: rgb(8, 8, 8);
+#intro > :last-child * {
+    font-style: initial;
 }
 
 a {
     color: oklch(1 0.4 190);
 }
 
-a:hover {
+a:active {
     color: oklch(1 0.4 140);
 }
 
@@ -74,132 +65,34 @@ a:visited {
     color: oklch(0.5 0.4 325);
 }
 
-#options label {
+main {
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+main > *:first-child {
+    flex-grow: 4;
+    gap: 16px;
+}
+
+.options label {
     font-style: italic;
 }
 
-#gallery {
-    border-bottom: 4px solid white;
-    padding-bottom: 16px;
+#sampling-screen {
+    height: 80vh;
+    overflow: hidden;
 }
 
-#gallery a {
-    color: white;
-}
-
-#gallery h2 {
-    margin-bottom: 16px;
-}
-
-#gallery ul,
-#clipboard {
-    scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
-}
-
-#gallery ul {
-    flex-wrap: wrap;
-    gap: 20px;
-    max-height: calc(20.8em + 80px);
-    overflow: auto;
-    min-height: 3.5em;
-    border-left: 4px solid white;
-    border-right: 4px dashed blue;
-    padding: 0 16px;
-}
-
-#gallery ul.empty::after {
-    content: 'Image gallery is empty.';
-    margin: auto;
-    font-style: italic;
-    color: lightgrey;
-}
-
-#gallery li,
-#gallery a {
-    width: 10em;
-    height: calc(10.4em + 8px);
-}
-
-#gallery a {
-    display: block;
-}
-
-#gallery a:hover,
-#gallery>div.flex>div.relative {
-    cursor: pointer;
-}
-
-#gallery>div.flex>div.relative>input,
-#gallery>div.flex>div.relative>div.absolute {
+#viewports.active::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline-offset: -1px;
+    outline: 1px solid;
     pointer-events: none;
-}
-
-#gallery li div:first-child {
-    height: 7em;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#gallery li div:last-child {
-    height: calc(2.9em + 8px);
-    background: rgb(8, 8, 8);
-    padding: 0.4em;
-}
-
-#gallery img {
-    object-fit: contain;
-}
-
-@supports (line-clamp: 2) {
-    #gallery p {
-        line-clamp: 2;
-    }
-}
-
-@supports not (line-clamp: 2) {
-    #gallery p {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-    }
-}
-
-#gallery>div:last-child {
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 16px;
-}
-
-#gallery>div:last-child>div:first-child {
-    width: 5ch;
-    height: 2em;
-}
-
-#load-example-image+label {
-    font-size: small;
-    margin-left: 8px;
-}
-
-*:has(> #add-files) {
-    color: black;
-    background: white;
-    font-weight: bold;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-#add-files {
-    opacity: 0;
-}
-
-*:has(> #add-files).reveal {
-    pointer-events: all;
-    visibility: visible;
-    animation: reveal 2s linear;
+    animation: 2s reveal backwards;
 }
 
 @keyframes reveal {
@@ -212,23 +105,17 @@ a:visited {
     }
 }
 
-#drop-zone {
-    margin: 16px 0;
-    height: 80vh;
-    overflow: hidden;
-}
-
 .marching-ants {
     animation: march 4s linear infinite;
 }
 
 @keyframes march {
     from {
-        stroke-dashoffset: 0
+        stroke-dashoffset: 0;
     }
 
     to {
-        stroke-dashoffset: -128
+        stroke-dashoffset: -128;
     }
 }
 
@@ -243,11 +130,7 @@ a:visited {
     oklch(0.25 0 0), oklch(1 0 0));
     animation: rotate 16s linear infinite;
 
-    mask-image: url(#dashMask);
-
-    @supports not (mask-image: url(#dashMask)) {
-        -webkit-mask-image: url(#dashMask)
-    }
+    mask-image: url(#dash-mask);
 }
 
 @keyframes rotate {
@@ -256,8 +139,11 @@ a:visited {
     }
 }
 
-[for="drag-n-drop"] {
+#input-img-screen label {
+    width: 75%;
     font-size: x-large;
+    font-style: italic;
+    text-align: center;
 }
 
 #drag-n-drop {
@@ -265,121 +151,203 @@ a:visited {
 }
 
 #viewports {
-    grid-template: 50% 50% / 75% 25%;
+    grid-template: 1fr 1fr / 3fr 1fr;
 }
 
-#image-viewer {
+*:has(> canvas) {
     grid-row: span 2;
+}
+
+canvas {
     cursor: pointer;
 }
 
+#scope {
+    grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+}
+
+#scope.active * {
+    outline: 1px dotted;
+    translate: 1px 0;
+    animation:
+        calc(min((sibling-index() - 1), 1) * 12.5ms)
+        calc((sibling-index() - 1) * 12.5ms)
+        reveal backwards;
+}
+
 #recent-clrs {
-    grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
 }
 
 #recent-clrs div:first-child {
     grid-area: span 2 / span 2;
 }
 
-#recent-clrs>div:hover {
-    scale: 1.5;
+#recent-clrs *:first-child:hover {
+    scale: unset;
 }
 
-@media (height < 400px) and (width < 700px) {
-    #recent-clrs {
-        grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-    }
+#recent-clrs *:hover {
+    scale: 1.25;
 }
 
-#options {
-    margin: 1em 0;
-    border-top: 4px solid white;
-    padding-top: 16px;
+.options {
+    display: flex;
     justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
     gap: 16px;
 }
 
-#options>div {
+.options.top-group {
+    justify-content: end;
+}
+
+#clear-canvas,
+#delete-samples,
+#copy {
+    overflow: hidden;
+}
+
+#clear-canvas *,
+#delete-samples * {
+    display: block;
+    padding: 8px;
+    text-box: trim-both cap alphabetic;
+    font-weight: bold;
+}
+
+#clear-canvas.active,
+#delete-samples.active,
+#copy.active {
+    background: white;
+    color: black;
+}
+
+#clear-canvas:not(.active),
+#delete-samples:not(.active),
+#copy:not(.active) {
+    background: dimgrey;
+}
+
+#clear-canvas,
+#delete-samples {
+    border-radius: 0 0 5px 0;
+}
+
+.options.bottom-group {
+    padding: 8px;
+    background: darkslategrey;
+}
+
+.options.bottom-group > * {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 1em;
+    gap: 16px;
 }
 
-#output h2,
-#sampling-frequency {
-    text-align: center;
+#sampling-frequency,
+#clr-format {
+    font-size: larger;
+}
+
+#image-viewer {
+    background:
+        repeating-conic-gradient(
+            var(--image-viewer-bg-clr) 0 25%,
+            var(--image-viewer-bg-clr-two) 0 50%)
+        0 / 20px 20px;
+}
+
+#sampling-frequency,
+#clr-format,
+#image-viewer-bg-clr,
+#image-viewer-bg-clr-two {
+    height: calc(12px + 1rcap);
 }
 
 #sampling-frequency {
-    box-sizing: content-box;
-    width: 4em;
+    padding-left: 1rch;
+}
+
+#clr-format {
+    padding-left: 0.5rch;
+}
+
+*:has(> #image-viewer-bg-clr) {
+    gap: 8px;
+}
+
+#output {
+    flex-grow: 1;
+    gap: 16px;
+}
+
+#sampling-frequency {
+    width: 5ch;
     border-radius: 2.5px;
 }
 
-#output h2 {
-    margin-bottom: 16px;
-}
-
-#output>div {
-    justify-content: space-around;
-    align-items: start;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-#output>div>div:first-child
-{
-    padding: 8px 12px;
-    border: 4px dashed white;
-    max-width: 64em;
+*:has(> #clipboard) {
+    padding: 8px;
+    border: 4px dashed dimgrey;
     flex-direction: column;
-    flex-grow: 3;
 }
 
-#output>div>div>div {
+*:has(> #clipboard).active {
+    border-color: white;
+}
+
+#output>div>div {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
 }
 
-#output>div>div>div>div {
-    align-items: center;
-    gap: 16px;
+#copy.active:hover {
+    background: goldenrod;
 }
 
 #copy {
-    width: fit-content;
-    height: fit-content;
-    padding: 2px 3px;
-    border: 2px solid white;
+    padding: 8px;
     font-weight: bolder;
-    translate: -1px -2px;
+}
+
+*:has(> #clipboard) > *:first-child {
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+#output .flx .flx p {
+    text-box: trim-both cap alphabetic;
+}
+
+
+*.slide-right {
+    animation: slide-right 2s linear;
+}
+
+@keyframes slide-right {
+    50% {
+        translate: 100% 0;
+    } 50.0001% {
+        translate: -100% 0;
+    } to {
+        translate: 0;
+    }
 }
 
 #copy.copied {
-    background: black;
-    color: white;
-    border: 2px solid lime;
-}
-
-*:has(> #copy) p {
-    translate: 0 -2px;
-}
-
-*:has(> #clipboard)>div>p {
-    translate: 0 -1px;
+    background: lime;
 }
 
 #clipboard {
-    border-right: 1px solid white;
-    padding-right: 20px;
-    min-height: 5em;
-    max-height: calc(31.5em);
+    --row: calc(1rem + 4px);
+    min-height: calc(4 * var(--row));
+    max-height: calc(8px + 1cap + 8px + 16px + 80vh + 16px + 12px + 1rcap + 8px + 8px
+                     - 4px - 8px - 8px - 1cap - 8px - 8px - 8px - 4px - 16px - 4px - 16px - 1cap - 16px - 4px);
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
 }
 
 #clipboard.empty::after {
@@ -389,39 +357,45 @@ a:visited {
 }
 
 #clipboard li {
-    height: 1em;
+    height: var(--row);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#clipboard li {
-    margin: 4px 0;
-}
-
-#clipboard li:nth-child(5n) {
-    background: linear-gradient(to right, navy, blue);
-}
-
 #clipboard code {
+    padding: 2px 0;
     font-size: large;
 }
 
-#clipboard div {
-    width: 1em;
-    height: 100%;
-    border: 1px dotted white;
+#clipboard li:nth-child(5n) {
+    background: linear-gradient(to right,
+    oklch(27.116% 0.18794 264.073), oklch(45.203% 0.3133 264.073));
 }
 
-#clipboard div:hover {
+#clipboard li:hover {
+    background: linear-gradient(to right,
+    oklch(37.116% 0.18794 154.073), oklch(55.203% 0.3133 154.073));
+}
+
+#clipboard div {
+    border: 1px dotted white;
+    border-bottom: none;
+    padding-bottom: 1px;
+    width: var(--row);
+    height: var(--row);
+}
+
+#clipboard li:last-child div {
+    border-bottom: 1px dotted white;
+    padding: 0;
+}
+
+#clipboard li div:hover {
     border: none;
-    scale: 1.5;
 }
 
 *:has(> #download) {
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
     gap: 16px;
 }
 
@@ -429,10 +403,14 @@ a:visited {
     box-sizing: content-box;
     color: white;
     font-weight: bolder;
-    width: 8em;
-    height: 2em;
-    padding: 4px;
+    padding: 16px;
     border: 4px solid transparent;
+    background:
+        linear-gradient(black) padding-box,
+        linear-gradient(to right, dimgrey, grey) border-box;
+}
+
+#download.active {
     background:
         linear-gradient(black) padding-box,
         linear-gradient(to right, lime, green) border-box;
@@ -450,7 +428,7 @@ a:visited {
     inherits: false;
 }
 
-#download:hover {
+#download.active:hover {
     border-color: transparent;
     background:
         linear-gradient(black) padding-box,
@@ -466,12 +444,6 @@ a:visited {
     animation: rotate-gradient 4s linear infinite, rotate-hue 2s linear infinite;
 }
 
-#download.inactive {
-    background:
-        linear-gradient(black) padding-box,
-        linear-gradient(to right, darkgrey, grey) border-box;
-}
-
 @keyframes rotate-gradient {
     to {
         --angle: 360deg
@@ -485,21 +457,32 @@ a:visited {
 }
 
 footer {
+    justify-content: space-between;
+    align-items: end;
     margin-top: 64px;
     padding: 16px;
     background: darkblue;
 }
 
-footer > *:not(:last-child) {
-    margin-bottom: 4px;
+footer div {
+    flex-direction: column;
+    gap: 8px;
 }
 
-footer > a {
-    translate: 0 -1px;
+#load-example-img {
+    text-align: end;
+    color: oklch(1 0.4 190);
+    font-family: monospace;
+    cursor: pointer;
+}
+
+#load-example-img:active {
+    color: oklch(1 0.4 140);
 }
 
 summary {
-    list-style: none;
+    display: flex;
+    align-items: center;
 }
 
 summary::before {
@@ -510,15 +493,18 @@ summary::before {
 
 details[open] summary::before {
     color: white;
-    display: inline-block;
-    translate: 0 -1px;
+    translate: 0 -2px;
     content: '-';
 }
 
 details[open] summary {
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 details[open] summary span {
-    background: #006161;
+    background: darkslategrey;
+}
+
+details[open] > :last-child {
+    text-box: trim-both cap alphabetic;
 }

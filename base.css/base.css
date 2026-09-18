@@ -30,9 +30,10 @@ audio, img, picture, svg, video, canvas, iframe, embed, object {
 
 button {
     cursor: pointer;
+    text-box: trim-both cap alphabetic;
 }
 
-button, details {
+button, summary {
     user-select: none;
 }
 

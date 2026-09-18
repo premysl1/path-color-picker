@@ -5,6 +5,15 @@ fix my svg not being visible
 validate gallery layout calculations
 fix firefox behavior
 add color removal: single color and whole list
+delete samples i.e. all samples tooltip
+easter egg smiley four colors: yellow, blue violet, blue, lime
+drop support for color sampling if cursor is outside the rendered image
+change bottom group height to 1 cap + 8px top bottom (padding)
+change variable to freq instead of frequency
+fix details layout
+optimize render scope
+update bottom-group clr and padding
+change clipboard border color on init
 
 // DONE
 write intro
@@ -33,3 +42,35 @@ scope
 panning and zooming of the canvas
 background change
 disable image smoothing for every viewport
+
+// init canvas
+    // all canvas listeners
+    // clear canvas
+        // add button listener
+        // change to active bg
+        // slide-right animation listener
+    // add scope outline
+    // add canvas outline
+
+// deinit canvas
+    // remove all canvas listeners
+    // remove scope outline
+    // remove canvas outline
+    // clear canvas
+        // remove button listener
+        // clear image viewer's canvas rectangle
+        // change to initial bg
+        // remove slide-right animation listener
+
+// if sampledClrs > 0
+    // copy
+        // has active bg
+        // has listener
+        // doesn't have clipboard empty message
+    // clipboard
+        // change border color
+    // download button
+        // has listener
+        // active bg
+    // delete canvas button has listener
+    // clear canvas button has listener

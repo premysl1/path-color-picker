@@ -1,337 +1,12 @@
 'use strict';
 
-// render first file image
-function renderFile(file)
-{
-    const img = new Image();
-    const objectURL = URL.createObjectURL(file);
-    img.onload = () =>
-    {
-        render(img);
-        URL.revokeObjectURL(objectURL);
-    };
-    img.src = objectURL;
-    return img;
-}
+// rgb color conversion for every web color format
+// source: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Colors/Color_format_converter
 
-// image gallery
-const galleryList = document.querySelector(`#gallery ul`);
-let bgClr = `black`; 
-function appendNewGalleryPiece(name, img)
-{
-    const li = document.createElement(`li`);
-    const a = document.createElement(`a`);
-    const div = document.createElement(`div`);
-    const loadedImgOrNot = !img ? document.createElement(`img`) : img;
-    const pDiv = document.createElement(`div`);
-    const p = document.createElement(`p`);
+// for every final conversion:
+//     input → {r: int, g: int, b: int: alpha: float}
+//     output → string
 
-    li.title = name;
-    li.append(a);
-    div.style.background = bgClr;
-    a.append(div);
-    div.append(loadedImgOrNot);
-    p.textContent = name;
-    pDiv.append(p);
-    a.append(pDiv);
-    galleryList.append(li);
-    a.setAttribute(`tabindex`, `0`)
-
-    return {img: loadedImgOrNot, a: a};
-}
-function setupPieceRerender(link, img)
-{
-    link.addEventListener(`click`, () =>
-    {
-        sx = 0;
-        sy = 0;
-        render(img);
-    });
-}
-function addFilesToGallery(files, firstImg)
-{
-    const {img, a} = appendNewGalleryPiece(files[0].name, firstImg);
-    setupPieceRerender(a, img);
-
-    for (let i = 1; i < files.length; i++) {
-        const {img, a} = appendNewGalleryPiece(files[i].name);
-        const objectURL = URL.createObjectURL(files[i]); 
-        img.onload = () =>
-        {
-            setupPieceRerender(a, img);
-            URL.revokeObjectURL(objectURL);
-        };
-        img.src = objectURL;
-    }
-}
-
-// Drag and Drop API
-const dragNDropInput = document.getElementById(`drag-n-drop`);
-const dragNDropLabel = document.querySelector(`[for="drag-n-drop"]`);
-const svg = document.querySelector(`#drop-zone svg`);
-const marchingAntGradient = document.getElementById(`marching-ant-gradient`);
-const dropZoneUI = [marchingAntGradient, svg, dragNDropLabel, dragNDropInput];
-function disableCanvasInput()
-{
-    for (let i = 0; i < dropZoneUI.length; i++) {
-        dropZoneUI[i].style.display = `none`;
-    }
-}
-function dropHandler(e)
-{
-    e.preventDefault();
-    return [...e.dataTransfer.items].map((item) => item.getAsFile()).
-    filter((file) => file);
-}
-const dropZone = document.getElementById(`drop-zone`);
-const addMoreFilesWrapper = document.querySelector(`div:has(> #add-files)`);
-const galleryUl = document.querySelector(`#gallery ul`);
-let isSamplingInit = false;
-let imageViewerBg = null;
-let isImageViewerBgDrawn = false;
-function initSampling(options)
-{
-    disableCanvasInput();
-    if (imageViewerBg && !isImageViewerBgDrawn) {
-        imageViewer.style.background = imageViewerBg; 
-        isImageViewerBgDrawn = true;
-    }
-    if (!options.exampleImage) {
-        addFilesToGallery(options.collection, renderFile(options.firstPiece));
-    }
-    addMoreFilesWrapper.classList.add(`reveal`);
-    galleryUl.classList.remove(`empty`);
-    isSamplingInit = true;
-}
-dropZone.addEventListener(`drop`, e =>
-{
-    const files = dropHandler(e);
-    initSampling({collection: files, firstPiece: files[0]});
-});
-
-window.addEventListener(`drop`, (e) =>
-{
-    if ([...e.dataTransfer.items].some((item) => item.kind === `file`))
-    e.preventDefault();
-});
-
-dropZone.addEventListener(`dragover`, (e) =>
-{
-    const fileItems = [...e.dataTransfer.items].
-    filter((item) => item.kind === `file`);
-
-    if (fileItems.length > 0) {
-        e.preventDefault();
-        if (fileItems.some((item) => item.type.startsWith(`image/`))) {
-            e.dataTransfer.dropEffect = `copy`;
-        } else {
-            e.dataTransfer.dropEffect = `none`;
-        }
-    }
-});
-
-window.addEventListener(`dragover`, (e) =>
-{
-    const fileItems = [...e.dataTransfer.items].
-    filter((item) => item.kind === `file`,);
-
-    if (fileItems.length > 0) {
-        e.preventDefault();
-        if (!dropZone.contains(e.target)) {
-            e.dataTransfer.dropEffect = `none`;
-        }
-    }
-});
-
-// drop zone click input
-// add more files button
-const moreFilesInput = document.getElementById(`add-files`);
-const canvasChangeInputGroup = [dragNDropInput, moreFilesInput];
-for (let i = 0; i < canvasChangeInputGroup.length; i++) {
-    canvasChangeInputGroup[i].addEventListener(`change`, e =>
-    {
-        initSampling({collection: e.target.files, firstPiece: e.target.files[0]});
-    });
-}
-
-const moreFilesWrapper = document.querySelector(`*:has(> #add-files)`);
-moreFilesWrapper.addEventListener('click', e =>
-{
-    moreFilesInput.click();
-});
-
-// canvas set up
-const pixelRatio = devicePixelRatio;
-
-const imageViewer = document.getElementById(`image-viewer`);
-const scope = document.getElementById(`scope`);
-
-const ctxIV = imageViewer.getContext(`2d`, {willReadFrequently: true});
-const ctxS = scope.getContext(`2d`);
-
-// canvas resizing
-const viewports = document.getElementById(`viewports`);
-function scaleCanvases()
-{
-    const viewportsRect = viewports.getBoundingClientRect();
-    imageViewer.width = viewportsRect.width * 0.75;
-    imageViewer.height = viewportsRect.height;
-
-    scope.width = viewportsRect.width * 0.25;
-    scope.height = viewportsRect.height * 0.50;
-
-    ctxIV.imageSmoothingEnabled = false;
-    ctxS.imageSmoothingEnabled = false;
-}
-scaleCanvases();
-
-const getHorizontalMarginOffset = () => innerWidth / innerHeight >= 1.25 ?
-innerWidth * 0.2 : innerWidth * 0.1;
-let horizontalMarginOffset = getHorizontalMarginOffset();
-
-// responsively resize viewports
-const resizeObserver = new ResizeObserver(() =>
-{
-    horizontalMarginOffset = getHorizontalMarginOffset();
-    scaleCanvases();
-    if (currentImg !== undefined) render();
-});
-resizeObserver.observe(viewports);
-
-// block viewports contextmenu
-function preventContextmenu(elmnts)
-{
-    for (let i = 0; i < elmnts.length; i++) {
-        elmnts[i].addEventListener(`contextmenu`, e => e.preventDefault());
-    }
-}
-const recentClrs = document.getElementById(`recent-clrs`);
-preventContextmenu([imageViewer, scope, recentClrs]);
-
-let currentImg;
-let fitScale = 1;
-let tx = 0;
-let ty = 0;
-
-function getfitScale(img)
-{
-    return Math.min(
-        imageViewer.width / img.naturalWidth,
-        imageViewer.height / img.naturalHeight
-    );
-}
-
-function resetView(img)
-{
-    const s = getfitScale(img);
-    fitScale = s;
-    tx = (imageViewer.width - (img.naturalWidth * s)) / 2;
-    ty = (imageViewer.height - (img.naturalHeight * s)) / 2;
-}
-
-function render(img = currentImg)
-{
-    currentImg = img;
-    resetView(img);
-    draw();
-}
-
-function draw()
-{
-    ctxIV.setTransform();
-    ctxIV.clearRect(0, 0, imageViewer.width, imageViewer.height);
-    ctxIV.drawImage(
-        currentImg,
-        0,
-        0,
-        currentImg.naturalWidth,
-        currentImg.naturalHeight,
-        Math.floor(tx),
-        Math.floor(ty),
-        currentImg.naturalWidth * fitScale,
-        currentImg.naturalHeight * fitScale
-    );
-}
-
-function getPointerCordinatesInCanvas(e)
-{
-    const rect = imageViewer.getBoundingClientRect();
-    return {
-        x: e.clientX - horizontalMarginOffset,
-        y: e.clientY - rect.top
-    };
-}
-
-let isPanning = false;
-let sx;
-let sy;
-
-const samplingFrequencyInput = document.getElementById(`sampling-frequency`);
-function getSamplingFrequency()
-{
-    return Number(samplingFrequencyInput.value);
-}
-
-let isSampling = false;
-let lastSampledX = null;
-let lastSampledY = null;
-let accLength = 0;
-
-function getPixelCoords(e)
-{
-    if (!currentImg) return null;
-    const {x, y} = getPointerCordinatesInCanvas(e);
-
-    const left   = tx;
-    const top    = ty;
-    const right  = tx + currentImg.naturalWidth  * fitScale;
-    const bottom = ty + currentImg.naturalHeight * fitScale;
-
-    const minX = Math.max(0, Math.floor(left));
-    const maxX = Math.min(imageViewer.width - 1, Math.floor(right - 1));
-    const minY = Math.max(0, Math.floor(top));
-    const maxY = Math.min(imageViewer.height - 1, Math.floor(bottom - 1));
-
-    if (minX > maxX || minY > maxY) return null;
-
-    const sx = Math.floor(Math.min(Math.max(x, minX), maxX));
-    const sy = Math.floor(Math.min(Math.max(y, minY), maxY));
-
-    return {sx, sy};
-}
-
-function getPixelsFromLine(x0, y0, x1, y1)
-{
-    const pixels = [];
-    const dx = Math.abs(x1 - x0);
-    const dy = Math.abs(y1 - y0);
-    const sx = x0 < x1 ? 1 : -1;
-    const sy = y0 < y1 ? 1 : -1;
-    let err = dx - dy;
-
-    let x = x0;
-    let y = y0;
-
-    while (true) {
-        pixels.push({x, y});
-        if (x === x1 && y === y1) break;
-        const e2 = 2 * err;
-        if (e2 > -dy) {
-            err -= dy;
-            x += sx;
-        }
-        if (e2 < dx) {
-            err += dx;
-            y += sy;
-        }
-    }
-    return pixels;
-}
-
-// color format setting
-const clrFormatSelect = document.getElementById(`clr-format`);
-
-// color conversion math
 const LRGB_LMS_MATRIX = [
   [0.4122214708, 0.5363325363, 0.0514459929],
   [0.2119034982, 0.6806995451, 0.1073969566],
@@ -360,8 +35,6 @@ const LRGB_XYZ_D65_MATRIX = [
   [0.0193339, 0.119192, 0.9503041],
 ];
 
-const D65 = [0.3457 / 0.3585, 1, 0.2958 / 0.3585];
-
 function multiplyByMatrix(matrix, tuple) {
   let i = [0, 0, 0];
   let j = matrix.length;
@@ -376,31 +49,25 @@ function rgbToLinear(c) {
 }
 
 function intToHex(i) {
-  return Math.round(Math.min(255, Math.max(0, i))).toString(16).padStart(2, "0").toLowerCase();
+  return Math.floor(i).toString(16).padStart(2, "0").toLowerCase();
 }
 
 function rgbToHEXText(c) {
   return `#${intToHex(c.r)}${intToHex(c.g)}${intToHex(c.b)}`;
 }
 
-function rgbaToHEXAText(clr) {
-  const hexText = rgbToHEXText(clr);
-  if (clr.alpha === undefined || clr.alpha >= 1.0) {
+function rgbaToHEXAText(color) {
+  const hexText = rgbToHEXText(color);
+  if (color.alpha === 1.0) {
     return hexText;
   }
-  const alpha = intToHex(clr.alpha * 255);
+  const alpha = intToHex(color.alpha * 255);
   return `${hexText}${alpha}`;
 }
 
-function rgbaToRGBText(clr) {
-  const alpha = clr.alpha !== undefined ? clr.alpha : 1.0;
-  return `rgb(${Math.round(clr.r)} ${Math.round(clr.g)} ${Math.round(clr.b)}${
-    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
-  })`;
-}
-
-function rgbaToHSLA(clr) {
-  let { r, g, b, alpha = 1.0 } = clr;
+function rgbaToHSLA(color) {
+  let { r, g, b, alpha } = color;
+  // Let's have r, g, b in the range [0, 1]
   r /= 255;
   g /= 255;
   b /= 255;
@@ -415,11 +82,10 @@ function rgbaToHSLA(clr) {
     h = ((g - b) / delta) % 6;
   } else if (max === g) {
     h = (b - r) / delta + 2;
-  } else {
-    h = (r - g) / delta + 4;
-  }
+  } else h = (r - g) / delta + 4;
   h = Math.round(h * 60);
 
+  // We want an angle between 0 and 360°
   if (h < 0) {
     h += 360;
   }
@@ -432,23 +98,23 @@ function rgbaToHSLA(clr) {
   return { h, s, l, alpha };
 }
 
-function toHSLAText(clr) {
-  const { h, s, l, alpha = 1.0 } = rgbaToHSLA(clr);
+function toHSLAText(color) {
+  const { h, s, l, alpha } = rgbaToHSLA(color);
   return `hsl(${h.toFixed(0)} ${s.toFixed(0)}% ${l.toFixed(0)}%${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function rgbaToHWBAText(clr) {
-  let { h, s, l, alpha = 1.0 } = rgbaToHSLA(clr);
-  const chroma = (s / 100) * (1 - Math.abs((2 * l) / 100 - 1));
-  let W = Math.round(l - (chroma * 100) / 2);
-  let B = Math.round(100 - l - (chroma * 100) / 2);
+function rgbaToHWBAText(color) {
+  let { h, s, l, alpha } = rgbaToHSLA(color);
+  const chroma = s * (1 - Math.abs(l / 50 - 1));
+  let W = (l - chroma / 2).toFixed(0);
+  let B = (100 - l - chroma / 2).toFixed(0);
   return `hwb(${h} ${W}% ${B}%${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToXYZD50(clr) {
-  let { r, g, b, alpha = 1.0 } = clr;
+function rgbaToXYZD50(color) {
+  let { r, g, b, alpha } = color;
   r = rgbToLinear(r / 255) * 255;
   g = rgbToLinear(g / 255) * 255;
   b = rgbToLinear(b / 255) * 255;
@@ -457,16 +123,16 @@ function rgbaToXYZD50(clr) {
   return { x: xyz[0] / 255, y: xyz[1] / 255, z: xyz[2] / 255, alpha };
 }
 
-function rgbaToXYZD50Text(clr) {
-  let { alpha = 1.0 } = clr;
-  const xyz = rgbaToXYZD50(clr);
+function rgbaToXYZD50Text(color) {
+  let { alpha } = color;
+  const xyz = rgbaToXYZD50(color);
   return `color(xyz-d50 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToXYZD65(clr) {
-  let { r, g, b, alpha = 1.0 } = clr;
+function rgbaToXYZD65(color) {
+  let { r, g, b, alpha } = color;
   r = rgbToLinear(r / 255) * 255;
   g = rgbToLinear(g / 255) * 255;
   b = rgbToLinear(b / 255) * 255;
@@ -475,16 +141,17 @@ function rgbaToXYZD65(clr) {
   return { x: xyz[0] / 255, y: xyz[1] / 255, z: xyz[2] / 255, alpha };
 }
 
-function rgbaToXYZD65Text(clr) {
-  let { alpha = 1.0 } = clr;
-  const xyz = rgbaToXYZD65(clr);
+function rgbaToXYZD65Text(color) {
+  let { alpha } = color;
+  const xyz = rgbaToXYZD65(color);
   return `color(xyz-d65 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function xyzToLab(clr) {
-  let { x, y, z, alpha = 1.0 } = clr;
+const D65 = [0.3457 / 0.3585, 1, 0.2958 / 0.3585];
+function xyzToLab(color) {
+  let { x, y, z, alpha } = color;
   [x, y, z] = [x, y, z].map((v, i) => {
     v /= D65[i];
     return v > 0.0088564516 ? Math.cbrt(v) : v * 903.2962962962963 + 16 / 116;
@@ -492,17 +159,17 @@ function xyzToLab(clr) {
   return { l: 116 * y - 16, a: 500 * (x - y), b: 200 * (y - z), alpha };
 }
 
-function rgbaToLabText(clr) {
-  let { alpha = 1.0 } = clr;
-  const xyz = rgbaToXYZD50(clr);
+function rgbaToLabText(color) {
+  let { alpha } = color;
+  const xyz = rgbaToXYZD50(color);
   const lab = xyzToLab(xyz);
   return `lab(${lab.l.toFixed(3)} ${lab.a.toFixed(3)} ${lab.b.toFixed(3)}${
     alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
   })`;
 }
 
-function rgbToOklab(clr) {
-  let { r, g, b, alpha = 1.0 } = clr;
+function rgbToOklab(color) {
+  let { r, g, b, alpha } = color;
   r = rgbToLinear(r / 255);
   g = rgbToLinear(g / 255);
   b = rgbToLinear(b / 255);
@@ -514,16 +181,16 @@ function rgbToOklab(clr) {
   return { l: oklab[0], a: oklab[1], b: oklab[2], alpha };
 }
 
-function toOkLabText(clr) {
-  let { alpha = 1.0 } = clr;
-  const oklab = rgbToOklab(clr);
+function toOkLabText(color) {
+  let { alpha } = color;
+  const oklab = rgbToOklab(color);
   return `oklab(${oklab.l.toFixed(5)} ${oklab.a.toFixed(5)} ${oklab.b.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function labToLCH(clr) {
-  const { l, a, b, alpha = 1.0 } = clr;
+function labToLCH(color) {
+  const { l, a, b, alpha } = color;
   const c = Math.sqrt(a * a + b * b);
   let h = Math.atan2(b, a) * (180 / Math.PI);
   if (h < 0) {
@@ -532,9 +199,9 @@ function labToLCH(clr) {
   return { l, c, h, alpha };
 }
 
-function toLCHText(clr) {
-  let { alpha = 1.0 } = clr;
-  const xyz = rgbaToXYZD50(clr);
+function toLCHText(color) {
+  let { alpha } = color;
+  const xyz = rgbaToXYZD50(color);
   const lab = xyzToLab(xyz);
   const lch = labToLCH(lab);
   return `lch(${lch.l.toFixed(3)} ${lch.c.toFixed(3)} ${lch.h.toFixed(3)}${
@@ -542,416 +209,736 @@ function toLCHText(clr) {
   })`;
 }
 
-function rgbaToOkLCh(clr) {
-  const lab = rgbToOklab(clr);
+function rgbaToOkLCh(color) {
+  const lab = rgbToOklab(color);
   const oklch = labToLCH(lab);
-  return { l: oklch.l, c: oklch.c, h: oklch.h, alpha: clr.alpha !== undefined ? clr.alpha : 1.0 };
+  return { l: oklch.l, c: oklch.c, h: oklch.h, alpha: color.alpha };
 }
 
-function toOkLChText(clr) {
-  let { alpha = 1.0 } = clr;
-  const oklch = rgbaToOkLCh(clr);
+function toOkLChText(color) {
+  let { alpha } = color;
+  const oklch = rgbaToOkLCh(color);
   return `oklch(${oklch.l.toFixed(5)} ${oklch.c.toFixed(5)} ${oklch.h.toFixed(
     5,
   )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
 }
 
-function rgbaToClrSRGBText(clr) {
-  const alpha = clr.alpha !== undefined ? clr.alpha : 1.0;
-  return `color(srgb ${(clr.r / 255).toFixed(3)} ${(clr.g / 255).toFixed(3)} ${(clr.b / 255).toFixed(3)}${
-    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
-  })`;
+// define viewports
+
+const imageViewer = document.querySelector(`canvas`);
+const scope = document.getElementById(`scope`);
+const recentClrs = document.getElementById(`recent-clrs`);
+
+// block viewports contextmenus
+
+[imageViewer, scope, recentClrs].forEach(viewport =>
+    viewport.addEventListener(`contextmenu`, e => e.preventDefault()));
+
+// canvas set up
+
+const ctxIV = imageViewer.getContext(`2d`);
+
+// canvas resizing
+
+const canvasContainer = document.querySelector(`*:has(> canvas)`);
+
+function resizeCanvas() {
+    const canvasContainerRect = canvasContainer.getBoundingClientRect();
+    imageViewer.width = canvasContainerRect.width;
+    imageViewer.height = canvasContainerRect.height;
+
+    ctxIV.imageSmoothingEnabled = false;
 }
 
-function formatClr(clr, format = `OKLCH`) {
-    switch (format) {
-        case `OKLCH`: return toOkLChText(clr);
-        case `HEX`: return rgbaToHEXAText(clr);
-        case `RGB`: return rgbaToRGBText(clr);
-        case `SRGB`:
-        case `sRGB`:
-        case `color(srgb)`: return rgbaToClrSRGBText(clr);
-        case `HSL`: return toHSLAText(clr);
-        case `LAB`: return rgbaToLabText(clr);
-        case `LCH`: return toLCHText(clr);
-        case `OKLAB`: return toOkLabText(clr);
-        case `XYZ D50`: return rgbaToXYZD50Text(clr);
-        case `XYZ D65`: return rgbaToXYZD65Text(clr);
-        default: return toOkLChText(clr);
-    }
+let horizontalMarginOffset;
+const updateHorizontalMarginOffset = () => {
+    horizontalMarginOffset = innerWidth * 0.1;
 }
 
-function samplePixelAtCoords(sx, sy, updateHistory = false)
-{
-    const rgba = ctxIV.getImageData(sx, sy, 1, 1).data;
-    const clrObj = {
-        r: rgba[0],
-        g: rgba[1],
-        b: rgba[2],
-        alpha: rgba[3] / 255
-    };
-    const formattedClr = formatClr(clrObj, clrFormatSelect.value);
-    recentClrsFields[0].style.backgroundColor = formattedClr;
-    if (updateHistory) updateRecentClrsFields(formattedClr);
-}
+// responsively resize viewports
 
-function processSampling(e)
-{
-    if (!isSampling || !currentImg) return;
+const viewports = document.getElementById(`viewports`);
 
-    const f = getSamplingFrequency();
-    const pointerEvents = e.getCoalescedEvents();
-
-    for (const pointerEvent of pointerEvents) {
-        const coords = getPixelCoords(pointerEvent);
-        if (!coords) continue;
-
-        if (lastSampledX === null || lastSampledY === null) {
-            samplePixelAtCoords(coords.sx, coords.sy, true);
-            lastSampledX = coords.sx;
-            lastSampledY = coords.sy;
-            accLength = 0;
-            continue;
-        }
-
-        if (f === 1) {
-            const pixels = getPixelsFromLine(lastSampledX, lastSampledY, coords.sx, coords.sy);
-            for (let i = 0; i < pixels.length; i++) {
-                const pixel = pixels[i];
-
-                if (pixel.x === lastSampledX && pixel.y === lastSampledY) continue;
-                samplePixelAtCoords(pixel.x, pixel.y, true);
-                lastSampledX = pixel.x;
-                lastSampledY = pixel.y;
-            }
-        } else {
-            let x1 = lastSampledX;
-            let y1 = lastSampledY;
-            const x2 = coords.sx;
-            const y2 = coords.sy;
-
-            let lineLength = Math.hypot(x2 - x1, y2 - y1);
-            if (lineLength === 0) continue;
-
-            accLength += lineLength;
-
-            while (accLength >= f) {
-                const needed = f - (accLength - lineLength);
-                const t = Math.min(Math.max(needed / lineLength, 0), 1);
-
-                const interpX = Math.round(x1 + t * (x2 - x1));
-                const interpY = Math.round(y1 + t * (y2 - y1));
-                samplePixelAtCoords(interpX, interpY, true);
-
-                accLength -= f;
-                lineLength = lineLength - needed;
-                x1 = interpX;
-                y1 = interpY;
-
-                if (lineLength <= 0) break;
-            }
-
-            lastSampledX = coords.sx;
-            lastSampledY = coords.sy;
-        }
-    }
-}
-
-imageViewer.addEventListener(`pointerdown`, e =>
-{
-    if (e.button === 2) {
-        imageViewer.setPointerCapture(e.pointerId);
-        isPanning = true;
-        const {x, y} = getPointerCordinatesInCanvas(e);
-        sx = x;
-        sy = y;
-        imageViewer.style.cursor = `grabbing`;
-    } else if (e.button === 0) {
-        imageViewer.setPointerCapture(e.pointerId);
-        isSampling = true;
-        accLength = 0;
-        const coords = getPixelCoords(e);
-        if (coords) {
-            samplePixelAtCoords(coords.sx, coords.sy, true);
-            lastSampledX = coords.sx;
-            lastSampledY = coords.sy;
-            imageViewer.style.cursor = `crosshair`;
-        }
-    }
+const resizeObserver = new ResizeObserver(() => {
+    resizeCanvas();
+    if (inputImg !== undefined) render(inputImg);
+    updateHorizontalMarginOffset();
 });
 
-imageViewer.addEventListener(`pointermove`, e =>
-{
-    renderScope(e);
-    paintRecentClrsFields(e);
+resizeObserver.observe(viewports);
 
-    if (isSampling) {
-        processSampling(e);
-    }
+//
 
-    if (!isPanning) return;
+let inputImg;
+let imageDataObj = null;
+let scale = 1;
+let tx = 0;
+let ty = 0;
 
-    const {x, y} = getPointerCordinatesInCanvas(e);
-    const dx = x - sx;
-    const dy = y - sy;
-    sx = x;
-    sy = y;
-    tx += dx;
-    ty += dy;
+// get image's Uint8ClampedArray
 
-    draw();
-});
+function updateImageDataObj(img) {
+    const offscreen = document.createElement(`canvas`);
+    offscreen.width = img.naturalWidth;
+    offscreen.height = img.naturalHeight;
 
-function stopSampling(e)
-{
-    isSampling = false;
-    lastSampledX = null;
-    lastSampledY = null;
-    accLength = 0;
-    if (e && e.pointerId !== undefined && imageViewer.hasPointerCapture(e.pointerId)) {
-        try {
-            imageViewer.releasePointerCapture(e.pointerId);
-        } catch (_) {}
-    }
-}
-
-imageViewer.addEventListener(`pointerup`, e =>
-{
-    if (e.button === 0) {
-        stopSampling(e);
-        imageViewer.style.cursor = `pointer`;
-    } else if (e.button === 2) {
-        isPanning = false;
-        imageViewer.style.cursor = `pointer`;
-        if (imageViewer.hasPointerCapture(e.pointerId)) {
-            try {
-                imageViewer.releasePointerCapture(e.pointerId);
-            } catch (_) {}
-        }
-    }
-});
-
-imageViewer.addEventListener(`pointercancel`, e =>
-{
-    isPanning = false;
-    stopSampling(e);
-});
-
-imageViewer.addEventListener(`lostpointercapture`, e =>
-{
-    isPanning = false;
-    stopSampling(e);
-});
-
-
-// zooming
-const zoomFactor = 1.05; // per "tick" of wheel movement
-
-function zoom(e)
-{
-    if (!currentImg) return;
-
-    const {x, y} = getPointerCordinatesInCanvas(e);
-
-    // Smooth exponential zoom based on wheel delta magnitude.
-    const factor = Math.pow(zoomFactor, -e.deltaY / 100);
-    const newScale = fitScale * factor;
-
-    // Recompute the *actual* factor applied after clamping, so the
-    // point under the cursor stays fixed even at the zoom limits.
-    const actualFactor = newScale / fitScale;
-    tx = x - (x - tx) * actualFactor;
-    ty = y - (y - ty) * actualFactor;
-    fitScale = newScale;
-
-    draw();
-}
-
-let id;
-imageViewer.addEventListener(`wheel`, e =>
-{
-    e.preventDefault();
-    zoom(e);
-    imageViewer.style.cursor = `nesw-resize`;
-    clearTimeout(id);
-    id = setTimeout(() => imageViewer.style.cursor = `pointer`, 200);
-}, {passive: false});
-
-// scope
-const SCOPE_RADIUS = 5; // half-width of the sampled square, in *image* pixels
-const SCOPE_SIZE = SCOPE_RADIUS * 2;
-
-function renderScope(e)
-{
-    if (!currentImg) return;
-
-    const {x, y} = getPointerCordinatesInCanvas(e);
-
-    // Undo the current pan/zoom to find the cursor's position in image space.
-    const imgX = (x - tx) / fitScale;
-    const imgY = (y - ty) / fitScale;
-
-    const maxX = Math.max(0, currentImg.naturalWidth - SCOPE_SIZE);
-    const maxY = Math.max(0, currentImg.naturalHeight - SCOPE_SIZE);
-    const sx = Math.min(Math.max(0, imgX - SCOPE_RADIUS), maxX);
-    const sy = Math.min(Math.max(0, imgY - SCOPE_RADIUS), maxY);
-
-    ctxS.clearRect(0, 0, scope.width, scope.height);
-    ctxS.drawImage(
-        currentImg,
-        sx, sy, SCOPE_SIZE, SCOPE_SIZE,
-        0, 0, scope.width, scope.height
+    const offCtx = offscreen.getContext(`2d`, {desynchronized: true});
+    offCtx.drawImage(img, 0, 0);
+    imageDataObj = offCtx.getImageData(
+        0,
+        0, 
+        img.naturalWidth,
+        img.naturalHeight
     );
 }
 
+function getPxAt(x, y) {
+	const xy = (y * imageDataObj.width + x) * 4;
+    let clr = [imageDataObj.data[xy], imageDataObj.data[xy + 1], imageDataObj.data[xy + 2], imageDataObj.data[xy + 3]];
+    if (clr.every(channel => channel === 0)) return {isEveryChannelEmpty: true};
+
+	return {
+        r: clr[0],
+        g: clr[1],
+        b: clr[2],
+        alpha: clr[3] / 255,
+    };
+}
+
+function updateIVscale(img) {
+    scale = Math.min(
+        imageViewer.width / img.naturalWidth,
+        imageViewer.height / img.naturalHeight
+    );
+}
+
+function calculateFit(img) {
+    updateIVscale(img)
+    tx = Math.round((imageViewer.width - (img.naturalWidth * scale)) / 2);
+    ty = Math.round((imageViewer.height - (img.naturalHeight * scale)) / 2);
+}
+
+function render(img) {
+    inputImg = img;
+    updateImageDataObj(img);
+    calculateFit(img);
+    draw(img);
+}
+
+function draw(img) {
+    ctxIV.clearRect(0, 0, imageViewer.width, imageViewer.height);
+    ctxIV.drawImage(
+        img,
+        tx,
+        ty,
+        img.naturalWidth * scale,
+        img.naturalHeight * scale
+    );
+}
+
+function getCanvasXY(e) {
+    return {
+        x: Math.round(e.clientX - horizontalMarginOffset),
+        y: Math.round(e.clientY - imageViewer.getBoundingClientRect().top)
+    };
+}
+
+const samplingFrequencyInput = document.getElementById(`sampling-frequency`);
+
+function getCanvasXYOnlyInImg(e) {
+    let {x, y} = getCanvasXY(e);
+
+    const right  = tx + inputImg.naturalWidth  * scale;
+    const bottom = ty + inputImg.naturalHeight * scale;
+
+    if (x < tx || x > right || y < ty || y > bottom)
+        return {isPointerOutsideOfImage: true}; 
+
+    return {x, y, isPointerOutsideOfImage: false};
+}
+
+let isUserPanning = false;
+let isUserSamplingPath = false;
+let lastSampledX = null;
+let lastSampledY = null;
+let accLength = 0;
+
+function closeSamplingPath(e)
+{
+    isUserSamplingPath = false;
+    lastSampledX = null;
+    lastSampledY = null;
+    accLength = 0;
+
+    if (imageViewer.hasPointerCapture(e.pointerId)) {
+        imageViewer.releasePointerCapture(e.pointerId);
+    }
+}
+
+const clearCanvasBtn = document.getElementById(`clear-canvas`);
+
+function calculateImgXY(x, y) {
+    return {
+        imgX: Math.floor((x - tx) / scale),
+        imgY: Math.floor((y - ty) / scale)
+    };
+}
+
+let canvasScrollingIconTimeoutId;
+const canvasControls = {
+    pointerdown: {
+        target: imageViewer,
+        event: `pointerdown`,
+        func: e => {
+            if (e.button === 0) {        
+                imageViewer.setPointerCapture(e.pointerId);
+                
+                const {x, y, isPointerOutsideOfImage}
+                = getCanvasXYOnlyInImg(e);
+                if (isPointerOutsideOfImage) return;
+
+                isUserSamplingPath = true;
+                accLength = 0;
+                samplePx(x, y);
+                lastSampledX = x;
+                lastSampledY = y;
+
+                imageViewer.style.cursor = `crosshair`;
+            } else if (e.button === 2) {
+                imageViewer.setPointerCapture(e.pointerId);
+                isUserPanning = true;
+
+                imageViewer.style.cursor = `grabbing`;
+            }
+        }
+    },
+    pointerMovement: {
+        target: imageViewer,
+        event: `pointermove`,
+        func: e => {
+            if (isUserPanning) {
+                tx += e.movementX;
+                ty += e.movementY;
+
+                draw(inputImg);
+            }
+
+            // compute coordinates for paint scope and paint hover field 
+
+            const {x, y} = getCanvasXY(e);
+            const {imgX, imgY} = calculateImgXY(x, y);
+
+            // paint hover field
+
+            if (imgX >= 0 || imgY >= 0) {
+                const {r, g, b, alpha, isEveryChannelEmpty} = getPxAt(imgX, imgY);
+                if (!isEveryChannelEmpty) recentClrsFields[0].style.backgroundColor = `rgb(${r} ${g} ${b} / ${alpha})`;
+            } else {
+                recentClrsFields[0].style.backgroundColor = `initial`;
+            }
+
+            // paint scope
+
+            let lens = 0;
+            for (let dy = -4; dy <= 4; dy++) {
+                for (let dx = -4; dx <= 4; dx++) {
+                    const pxX = imgX + dx;
+                    const pxY = imgY + dy;
+
+                    if (pxX >= 0 && pxX < imageDataObj.width &&
+                        pxY >= 0 && pxY < imageDataObj.height) {
+                        const {r, g, b, alpha, isEveryChannelEmpty} = getPxAt(imgX, imgY)
+                        if (!isEveryChannelEmpty) scopeLenses[lens].style.backgroundColor = `rgb(${r} ${g} ${b} / ${alpha})`;
+                    } else {
+                        scopeLenses[lens].style.backgroundColor = `initial`;
+                    }
+
+                    lens++;
+                }
+            }
+
+            // sample path
+
+            if (!isUserSamplingPath) return;
+
+            const pointerEvents = e.getCoalescedEvents();
+
+            for (const pointerEvent of pointerEvents) {
+                const {x, y, isPointerOutsideOfImage}
+                = getCanvasXYOnlyInImg(pointerEvent);
+
+                if (isPointerOutsideOfImage) continue;
+
+                if (lastSampledX === null || lastSampledY === null) {
+                    samplePx(x, y);
+                    lastSampledX = x;
+                    lastSampledY = y;
+                    accLength = 0;
+                    continue;
+                }
+
+                const f = Number(samplingFrequencyInput.value);
+                if (f >= 2) {
+                    let x1 = lastSampledX;
+                    let y1 = lastSampledY;
+                    const x2 = x;
+                    const y2 = y;
+
+                    let lineLength = Math.hypot(x2 - x1, y2 - y1);
+                    if (lineLength === 0) continue;
+
+                    accLength += lineLength;
+
+                    while (accLength >= f) {
+                        const needed = f - (accLength - lineLength);
+                        const interpStep = Math.min(Math.max(needed / lineLength, 0), 1);
+
+                        const interpX = Math.round(x1 + interpStep * (x2 - x1));
+                        const interpY = Math.round(y1 + interpStep * (y2 - y1));
+
+                        samplePx(x, y);
+
+                        accLength -= f;
+                        lineLength = lineLength - needed;
+                        x1 = interpX;
+                        y1 = interpY;
+
+                        if (lineLength <= 0) break;
+                    }
+
+                    lastSampledX = x;
+                    lastSampledY = y;
+                } else {
+                    function getPXsFromLine(x, y, x1, y1) {
+                        const pxs = [];
+                        const dx = Math.abs(x1 - x);
+                        const dy = Math.abs(y1 - y);
+                        const sx = x < x1 ? 1 : -1;
+                        const sy = y < y1 ? 1 : -1;
+                        let err = dx - dy;
+
+                        while (true) {
+                            pxs.push({x, y});
+
+                            if (x === x1 && y === y1) break;
+
+                            const e2 = 2 * err;
+                            if (e2 > -dy) {
+                                err -= dy;
+                                x += sx;
+                            }
+                            if (e2 < dx) {
+                                err += dx;
+                                y += sy;
+                            }
+                        }
+
+                        return pxs;
+                    }
+
+                    const pxs = getPXsFromLine(lastSampledX, lastSampledY, x, y);
+                    for (let i = 1; i < pxs.length; i++) {
+                        const {x, y} = pxs[i];
+                        samplePx(x, y);
+                    }
+
+                    lastSampledX = x;
+                    lastSampledY = y;
+                }
+            }
+        }
+    },
+    pointerup: {
+        target: imageViewer,
+        event: `pointerup`,
+        func: e => {
+            if (e.button === 0) {
+                closeSamplingPath(e);
+
+                imageViewer.style.cursor = `pointer`;
+            } else if (e.button === 2) {
+                if (isUserPanning) imageViewer.releasePointerCapture(e.pointerId);
+                isUserPanning = false;
+
+                imageViewer.style.cursor = `pointer`;
+            }
+        }
+    },
+    lostpointercapture: {
+        target: imageViewer,
+        event: `lostpointercapture`,
+        func: e => {
+            isUserPanning = false;
+            closeSamplingPath(e);
+        }
+    },
+    zooming: {
+        target: imageViewer,
+        event: `wheel`,
+        func: e => {
+            e.preventDefault();
+
+            const {x, y} = getCanvasXY(e);
+
+            const factor = Math.pow(1.05, -e.deltaY * 0.01);
+
+            tx = x - (x - tx) * factor;
+            ty = y - (y - ty) * factor;
+
+            scale *= factor;
+
+            draw(inputImg);
+
+            imageViewer.style.cursor = `nesw-resize`;
+            clearTimeout(canvasScrollingIconTimeoutId);
+            canvasScrollingIconTimeoutId = setTimeout(() =>
+                imageViewer.style.cursor = `pointer`,
+            200);
+        }
+    },
+    clearCanvas: {
+        target: clearCanvasBtn,
+        func: () => manageCanvas(`deinit`)
+    }
+};
+
+// define wire listeners for canvasControls and samplingBtns
+
+function wireListeners(listeners) {
+    const controller = new AbortController();
+
+    Object.values(listeners).forEach(({target, event, func}) => {
+        target.addEventListener(event !== undefined ? event : `click`,
+            func,
+        {signal: controller.signal});
+    });
+
+    return () => controller.abort();
+}
+
+let abortCanvasControls;
+const initCanvasControls = () => abortCanvasControls = wireListeners(canvasControls);
+
+const scopeLenses = document.querySelectorAll(`#scope *`);
+
 // sampled colors + recent colors
+
 const sampledClrs = [];
-let isSampledClrsUpdated = false;
+
 function stringifySampledClrs() {
     return sampledClrs.toReversed().join(`\n`);
 }
 
-const recentClrsFields = document.querySelectorAll(`#recent-clrs > div`);
-const recentClrsFieldsN = 60;
+const recentClrsFields = document.querySelectorAll(`#recent-clrs *`);
 
-function paintRecentClrsFields(e, updateRecentClrsFields = false)
-{
-    if (!currentImg) return;
-    const coords = getPixelCoords(e);
-    if (!coords) return;
-    samplePixelAtCoords(coords.sx, coords.sy, updateRecentClrsFields);
-}
+function paintRecentClrsFields() {
+    for (let i = 0; i < recentClrsFields.length - 1; i++) {
+        if (sampledClrs[i] === undefined) break;
 
-const clipboard = document.getElementById(`clipboard`);
-const clrsCounter = document.querySelector(`div:has(> #clipboard)>div>p`);
-const outputSection = document.getElementById(`output`);
-function updateRecentClrsFields(clr)
-{
-    sampledClrs.unshift(clr);
-    download.classList.remove(`inactive`);
-    if (sampledClrs.length > 0) {
-        clipboard.classList.remove(`empty`);
-    }
-    for (let i = 0; i < recentClrsFieldsN - 1; i++) {
         recentClrsFields[i + 1].style.backgroundColor = sampledClrs[i];
     }
-    const description = clrsCounter.innerText.slice(0, 15);
-    clrsCounter.innerText = description + ` ` + sampledClrs.length;
-    addClrsToClipboard(clr);
-    isSampledClrsUpdated = true;
 }
-function addClrsToClipboard(clr)
-{
+
+// color conversion entry point
+
+const clrFormatSelect = document.getElementById(`clr-format`);
+function samplePx(x, y) {
+    const {imgX, imgY} = calculateImgXY(x, y);
+    const clr = getPxAt(imgX, imgY);
+    const {isEveryChannelEmpty} = clr;
+    if (isEveryChannelEmpty) return;
+    if (!isComplementaryUIInit) manageComplementaryUI()
+    let convertedClr;
+
+    switch (clrFormatSelect.value) {
+        case `OKLCH`: convertedClr = toOkLChText(clr); break;
+        case `HEX`: convertedClr = rgbaToHEXAText(clr); break;
+        case `RGB`: convertedClr = `rgb(${clr.r} ${clr.g} ${clr.b}${clr.alpha < 1 ? ` / ${clr.alpha.toFixed(3)}` : ""})`; break;
+        case `sRGB`: convertedClr = `color(srgb ${(clr.r / 255).toFixed(3)} ${(clr.g / 255).toFixed(3)} ${(clr.b / 255).toFixed(3)}${clr.alpha < 1 ? ` / ${clr.alpha.toFixed(3)}` : ""})`; break;
+        case `HSL`: convertedClr = toHSLAText(clr); break;
+        case `LAB`: convertedClr = rgbaToLabText(clr); break;
+        case `LCH`: convertedClr = toLCHText(clr); break;
+        case `OKLAB`: convertedClr = toOkLabText(clr); break;
+        case `HWB` : convertedClr = rgbaToHWBAText(clr); break;
+        case `XYZ D50`: convertedClr = rgbaToXYZD50Text(clr); break;
+        case `XYZ D65`: convertedClr = rgbaToXYZD65Text(clr); break;
+    }
+
+    sampledClrs.unshift(convertedClr);
+    clipboardEnter(convertedClr);
+    paintRecentClrsFields();
+}
+
+// add colors to DOM
+
+const clrsCounter = document.getElementById(`counter`);
+const clipboard = document.getElementById(`clipboard`);
+
+function clipboardEnter(clr) {
     const li = document.createElement(`li`);
     const code = document.createElement(`code`);
     const div = document.createElement(`div`);
 
     code.textContent = clr;
-    div.style.background = `linear-gradient(${clr}) padding-box`;
+    div.style.backgroundColor = clr;
     li.append(code, div);
     clipboard.prepend(li);
-    li.setAttribute(`tabindex`, `0`)
+    li.setAttribute(`tabindex`, `0`);
+
+    clrsCounter.innerText = sampledClrs.length;
 }
 
-//function clearRecentClrs()
-//{
-//    for (let i = 0; i < recentClrsFieldsN; i++) {
-//        recentClrsFields[i].style.backgroundColor = `initial`;
-//    }
-//}
+// render first file image
 
-// load example image on user preference
-function loadAndRenderExampleImage(path)
+function renderFile(file)
 {
-    const {img, a} = appendNewGalleryPiece(path);
-    img.onload = () =>
-    {
-        setupPieceRerender(a, img)
-        render(img);
-    }
-    img.src = path;
-}
-
-let loadExampleImage = localStorage.getItem(`load-example-image`);
-const loadExampleImageInput = document.getElementById(`load-example-image`);
-if (loadExampleImage === `true`) {
-    loadExampleImageInput.setAttribute(`checked`, ``);
-    initSampling({exampleImage: true});
-    loadAndRenderExampleImage(`example-photo-DVD-disc.avif`);
-} else if (loadExampleImage === null) {
-    localStorage.setItem(`load-example-image`, `true`); 
-    loadExampleImageInput.setAttribute(`checked`, ``);
-    initSampling({exampleImage: true});
-    loadAndRenderExampleImage(`example-photo-DVD-disc.avif`);
-    loadExampleImage = `true`;
-}
-
-loadExampleImageInput.addEventListener(`change`, () =>
-{
-    if (loadExampleImage === `true`) {
-        loadExampleImageInput.removeAttribute(`checked`);
-        localStorage.setItem(`load-example-image`, `false`);
-        loadExampleImage = `false`;
+    const img = new Image();
+    if (typeof file !== `string`) {
+        const objectURL = URL.createObjectURL(file);
+        img.onload = () =>
+        {
+            render(img);
+            URL.revokeObjectURL(objectURL);
+        };
+        img.src = objectURL;
     } else {
-        loadExampleImageInput.setAttribute(`checked`, ``);
-        localStorage.setItem(`load-example-image`, `true`);
-        loadExampleImage = `true`;
+        img.onload = () =>
+        {
+            render(img);
+        };
+        img.src = file;
     }
+    return img;
+}
+
+// drag and drop
+
+const samplingScreen = document.getElementById(`sampling-screen`);
+const inputImgScreen = document.getElementById(`input-img-screen`);
+const dragNDropInput = document.getElementById(`drag-n-drop`);
+const dragNDropLabel = document.querySelector(`#input-img-screen label`);
+const svg = document.querySelector(`#input-img-screen svg`);
+const marchingAntGradient = document.getElementById(`marching-ant-gradient`);
+
+// state management
+
+let isCanvasInit = false;
+
+// image viewer background change
+
+const imageViewerBgClrInput = document.getElementById(`image-viewer-bg-clr`);
+const imageViewerBgClrTwoInput = document.getElementById(`image-viewer-bg-clr-two`);
+function styleImageViewerBg(clr = imageViewerBgClrInput.value, clr2 = imageViewerBgClrTwoInput.value) {
+    imageViewer.style.setProperty(`--image-viewer-bg-clr`, clr);
+    imageViewer.style.setProperty(`--image-viewer-bg-clr-two`, clr2);
+}
+imageViewerBgClrInput.addEventListener(`input`, () => {
+    if (isCanvasInit) styleImageViewerBg()
+});
+imageViewerBgClrTwoInput.addEventListener(`input`, () => {
+    if (isCanvasInit) styleImageViewerBg()
 });
 
-// image background change
-const imageBgClrInput = document.getElementById(`bg-clr`);
-imageBgClrInput.addEventListener(`change`, e =>
-{
-    if (isSamplingInit) imageViewer.style.backgroundColor = e.target.value;
-    else imageViewerBg = e.target.value;
-    
-    const historyImgBg = document.querySelectorAll(`#gallery a div:first-child`);
-    for (let i = 0; i < historyImgBg.length; i++) {
-        historyImgBg[i].style.backgroundColor = e.target.value;
-    }
-    bgClr = e.target.value;
-});
-imageBgClrInput.dispatchEvent(new Event(`change`));
+// slide right text animation management
 
-// clipboard copy
-const copy = document.getElementById(`copy`);
-copy.addEventListener(`click`, () =>
-{
-    async function writeClipboardText(text)
-    {
-        try {
-            await navigator.clipboard.writeText(text);
-            copy.classList.add(`copied`);
-            copy.innerText = `DONE`;
-            setTimeout(() =>
-            {
-                copy.classList.remove(`copied`);
-                copy.innerText = `COPY`;
+function addSlideRightAnimation(elm, triggerElm) {
+    const controller = new AbortController();
+
+    (triggerElm ? triggerElm : elm).addEventListener(`mouseenter`, () =>
+    elm.classList.add(`slide-right`), {signal: controller.signal});
+
+    elm.addEventListener(`animationend`, () =>
+    elm.classList.remove(`slide-right`), {signal: controller.signal});
+
+    return () => {
+        controller.abort();
+        elm.classList.remove(`slide-right`);
+    }
+}
+
+const clearCanvasSpan = document.querySelector(`#clear-canvas *`);
+const deleteSamplesSpan = document.querySelector(`#delete-samples *`);
+
+let abortClearCanvasSpanAnimation;
+const initClearCanvasSpanAnimation = () =>
+    abortClearCanvasSpanAnimation
+    = addSlideRightAnimation(clearCanvasSpan, clearCanvasBtn);
+
+let abortDeleteSamplesSpanAnimation;
+const initDeleteSamplesSpanAnimation = () =>
+    abortDeleteSamplesSpanAnimation
+    = addSlideRightAnimation(deleteSamplesSpan, deleteSamplesBtn);
+
+function manageCanvas(str, file) {
+    if (str === `init`) {
+        inputImgScreen.style.visibility = `hidden`;
+        renderFile(file);
+        initCanvasControls();
+        paintRecentClrsFields();
+        styleImageViewerBg();
+        scope.classList.add(`active`);
+        viewports.classList.add(`active`);
+        clearCanvasBtn.classList.add(`active`);
+        initClearCanvasSpanAnimation();
+
+        isCanvasInit = true;
+    } else if (str === `deinit`) {
+        inputImgScreen.style.visibility = `initial`;
+        abortCanvasControls();
+        ctxIV.clearRect(0, 0, imageViewer.width, imageViewer.height);
+        scopeLenses.forEach(lens => lens.style.backgroundColor = `initial`);
+        recentClrsFields.forEach(field => field.style.backgroundColor = `initial`);
+        styleImageViewerBg(`initial`, `initial`);
+        scope.classList.remove(`active`);
+        viewports.classList.remove(`active`);
+        clearCanvasBtn.classList.remove(`active`);
+        abortClearCanvasSpanAnimation();
+
+        isCanvasInit = false;
+        isExampleImgLoaded = false;
+    }
+}
+
+const deleteSamplesBtn = document.getElementById(`delete-samples`);
+const copyBtn = document.getElementById(`copy`);
+const downloadBtn = document.getElementById(`download`);
+
+const samplingBtns = {
+    delete: {
+        target: deleteSamplesBtn,
+        func: () => manageComplementaryUI(`deinit`)
+    },
+    copy: {
+        target: copyBtn,
+        func: () => {
+            async function writeClipboardText(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch (err) {
+                    console.error(err.message);
+                }
+            }
+            
+            const str = stringifySampledClrs();
+            writeClipboardText(str);
+
+            copyBtn.classList.add(`copied`);
+            copyBtn.textContent = `DONE`;
+            setTimeout(() => {
+                copyBtn.classList.remove(`copied`);
+                copyBtn.textContent = `COPY`;
             }, 1000);
-        } catch (err) {
-            console.error(err.message);
+        }
+    },
+    download: {
+        target: downloadBtn,
+        func: () => {
+            const blob = new Blob([stringifySampledClrs()],
+                {type: `text/plain`});
+            const a = document.createElement(`a`);
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = `sampled-colors.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
     }
+};
 
-    if (sampledClrs.length > 0) {
-        const str = stringifySampledClrs();
-        writeClipboardText(str);
-        isSampledClrsUpdated = false;
+let abortSamplingBtns;
+const initSamplingBtns = () => abortSamplingBtns = wireListeners(samplingBtns);
+
+let isComplementaryUIInit = false; 
+
+const clipboardContainer = document.querySelector(`*:has(> #clipboard)`);
+function manageComplementaryUI(str = `init`) {
+    if (str === `init`) {
+        initSamplingBtns();
+        deleteSamplesBtn.classList.add(`active`);
+        copyBtn.classList.add(`active`);
+        downloadBtn.classList.add(`active`);
+        clipboard.classList.remove(`empty`);
+        clipboardContainer.classList.add(`active`);
+        initDeleteSamplesSpanAnimation();
+
+        isComplementaryUIInit = true;
+    } else if (str === `deinit`) {
+        sampledClrs.length = 0;
+        clipboard.replaceChildren();
+        clrsCounter.innerText = 0;
+
+        recentClrsFields.forEach(field => field.style.backgroundColor = `initial`);
+        abortSamplingBtns();
+        deleteSamplesBtn.classList.remove(`active`);
+        copyBtn.classList.remove(`active`);
+        downloadBtn.classList.remove(`active`);
+        clipboard.classList.add(`empty`);
+        clipboardContainer.classList.remove(`active`);
+        abortDeleteSamplesSpanAnimation();
+
+        isComplementaryUIInit = false;
     }
+}
+
+// image click input
+
+dragNDropInput.addEventListener(`change`, e => {
+    manageCanvas(`init`, e.target.files[0]);
+    dragNDropInput.value = ``;
 });
 
-// download .txt file
-const download = document.getElementById(`download`);
-download.addEventListener(`click`, () =>
-{
-    if (sampledClrs.length > 0) {
-        const blob = new Blob([stringifySampledClrs()], {type: `text/plain`});
-        const a = document.createElement(`a`);
-        const url = URL.createObjectURL(blob);
-        a.href = url;
-        a.download = `sampled-colors.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
+// drag and drop
+// source: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+
+function dropHandler(ev) {
+  ev.preventDefault();
+  const files = [...ev.dataTransfer.items]
+    .map((item) => item.getAsFile())
+    .filter((file) => file);
+  if (!isCanvasInit) manageCanvas(`init`, files[0]);
+  else renderFile(files[0]);
+}
+
+samplingScreen.addEventListener(`drop`, dropHandler);
+window.addEventListener(`drop`, (e) => {
+  if ([...e.dataTransfer.items].some((item) => item.kind === `file`)) {
+    e.preventDefault();
+  }
+});
+
+samplingScreen.addEventListener(`dragover`, (e) => {
+  const fileItems = [...e.dataTransfer.items].filter(
+    (item) => item.kind === `file`,
+  );
+  if (fileItems.length > 0) {
+    e.preventDefault();
+    if (fileItems.some((item) => item.type.startsWith(`image/`))) {
+      e.dataTransfer.dropEffect = `copy`;
+    } else {
+      e.dataTransfer.dropEffect = `none`;
     }
+  }
+});
+
+window.addEventListener(`dragover`, (e) => {
+  const fileItems = [...e.dataTransfer.items].filter(
+    (item) => item.kind === `file`,
+  );
+  if (fileItems.length > 0) {
+    e.preventDefault();
+    if (!samplingScreen.contains(e.target)) {
+      e.dataTransfer.dropEffect = `none`;
+    }
+  }
+});
+
+// load example image
+
+const loadExampleImg = document.getElementById(`load-example-img`);
+let isExampleImgLoaded = false;
+loadExampleImg.addEventListener(`click`, () => {
+    if (isExampleImgLoaded) return;
+
+    manageCanvas(`init`, `example-photo-DVD-disc.avif`);
+    isExampleImgLoaded = true;
 });

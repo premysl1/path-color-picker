@@ -1065,13 +1065,17 @@ if short display value for that value already exists */
     align-items: center;
 }
 
+.justify_content_center,
+.jstf_cntnt_cntr,
 .center_main,
 .cntr_mn {
     justify-content: center;
 }
 
 .align_items_center,
-.lgn_tms_cntr {
+.lgn_tms_cntr,
+.center_cross,
+.cntr_crss {
     align-items: center;
 }
 
@@ -1213,11 +1217,4 @@ if short display value for that value already exists */
 .margin_unset,
 .mrgn_nst {
     margin: unset;
-}
-
-/* Helpers */
-
-.show_border,
-.shw_brdr {
-    border: 1px dashed red !important;
 }
