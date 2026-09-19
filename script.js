@@ -261,7 +261,7 @@ const viewports = document.getElementById(`viewports`);
 
 const resizeObserver = new ResizeObserver(() => {
     resizeCanvas();
-    if (inputImg !== undefined) render(inputImg);
+    if (isCanvasInit) render(inputImg);
     updateHorizontalMarginOffset();
 });
 

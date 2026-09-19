@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 html {
     scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
 }
@@ -5,7 +7,12 @@ html {
 body {
     background: black;
     color: white;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        'wdth' 100;
 }
 
 body::before {
