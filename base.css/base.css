@@ -57,10 +57,12 @@ input[type="range"]:active {
     cursor: grabbing;
 }
 
+details[open] > :last-child {
+    text-box: trim-both cap alphabetic;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
         scroll-behavior: smooth;
     }
 }

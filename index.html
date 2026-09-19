@@ -26,8 +26,8 @@
             </section>
             <p><span>?</span> Start sampling using the left-click button (hold and move your mouse to sample a path), or right-click to pan.</p>
         </div>
-        <main class="flx">
-            <section class="flx flx_drctn_clmn">
+        <main class="_flx">
+            <section class="_flx _clmn">
                 <div class="options top-group">
                     <button id="clear-canvas">
                         <span>CLEAR canvas</span>
@@ -36,12 +36,12 @@
                         <span>DELETE samples</span>
                     </button>
                 </div>
-                <div id="sampling-screen" class="grd_cntr rltv">
-                    <div id="viewports" class="wh_100 bslt grd">
+                <div id="sampling-screen" class="grd_cntr _rltv">
+                    <div id="viewports" class="wh_100 _bslt _grd">
                         <div>
                             <canvas id="image-viewer" class="wh_100"></canvas>
                         </div>
-                        <div id="scope" class="grd">
+                        <div id="scope" class="_grd">
                             <div></div>
                             <div></div>
                             <div></div>
@@ -124,7 +124,7 @@
                             <div></div>
                             <div></div>
                         </div>
-                        <div id="recent-clrs" class="grd">
+                        <div id="recent-clrs" class="_grd">
                             <div></div>
                             <div></div>
                             <div></div>
@@ -150,9 +150,9 @@
                         </div>
                     </div>
                     <div id="input-img-screen" class="grd_cntr wh_100">
-                        <div id="marching-ant-gradient" class="bslt wh_97d5">
+                        <div id="marching-ant-gradient" class="_bslt wh_97d5">
                         </div>
-                        <svg class="bslt"
+                        <svg class="_bslt"
                         width="97.5%"
                         height="97.5%" xmlns="http://www.w3.org/2000/svg">
                             <mask id="dash-mask">
@@ -171,7 +171,7 @@
                         </svg>
                         <label for="drag-n-drop">
                         Drop image here, or click to pick an image.</label>
-                        <input id="drag-n-drop" class="wh_100 bslt"
+                        <input id="drag-n-drop" class="wh_100 _bslt"
                         type="file" accept="image/*">
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                         type="number" min="1" value="50">
                     </div>
                     <div>
-                        <label for="clr-format">Color format:</label>
+                        <label for="clr-format">Format:</label>
                         <select id="clr-format">
                             <option value="RGB">RGB</option>
                             <option value="sRGB">sRGB</option>
@@ -199,8 +199,8 @@
                         </select>
                     </div>
                     <div>
-                        <label>Background color:</label>
-                        <div class="flx">
+                        <label>Background:</label>
+                        <div class="_flx">
                             <input id="image-viewer-bg-clr"
                             type="color" value="#0f003c">
                             <input id="image-viewer-bg-clr-two"
@@ -209,22 +209,22 @@
                     </div>
                 </div>
             </section>
-            <section id="output" class="flx flx_drctn_clmn lgn_tms_cntr">
-                <div class="flx w_100">
-                    <div class="flx">
+            <section id="output" class="_flx _clmn lgn_tms">
+                <div class="_flx w_100">
+                    <div class="_flx">
                         <p>colors = <span id="counter">0</span></p>
                         <button id="copy">COPY</button>
                     </div>
-                    <ul id="clipboard" class="empty flx"></ul>
+                    <ul id="clipboard" class="empty _flx"></ul>
                 </div>
-                <div class="flx lgn_tms_cntr">
+                <div class="_flx lgn_tms">
                     <p>As a <code>.txt</code> file:</p>
                     <button id="download">DOWNLOAD</button>
                 </div>
             </section>
         </main>
-        <footer class="flx">
-            <div class="flx">
+        <footer class="_flx">
+            <div class="_flx">
                 <details>
                     <summary>
                         <span>Do you send or have access to my images?</span>
