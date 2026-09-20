@@ -20,7 +20,7 @@ body::before {
     position: fixed;
     inset: 0;
     z-index: -1;
-    
+
     --line: rgba(255, 255, 255, 0.1);
     background-image:
         linear-gradient(var(--line) 1px, transparent 1px),
@@ -34,11 +34,16 @@ body > div {
     padding: 5% 10%;
 }
 
+:has(> #intro) {
+    margin-bottom: 64px;
+    justify-content: start;
+}
+
 #intro {
     padding: 32px;
-    margin-bottom: 64px;
     border: 1px solid dimgrey;
-    background: linear-gradient(to right, black, oklch(0.2 0.15458 194.807), black);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5),
+        oklch(0.25 0.15458 194.807 / 0.8), rgba(0, 0, 0, 0.5));
     background-size: 200% 100%;
     animation: slide 16s linear infinite;
 }
@@ -58,7 +63,7 @@ h1, h1 + p {
 }
 
 :has(> h1) {
-    margin-bottom: 16px;
+    margin: 64px 0;
 }
 
 h2 {
@@ -100,7 +105,7 @@ main > *:first-child {
 #sampling-screen {
     height: 80vh;
     overflow: hidden;
-    background: black;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 #viewports.active::after {
