@@ -29,6 +29,8 @@ body::before {
     mask-image: linear-gradient(black, transparent);
 }
 
+button { font-family: Arial }
+
 /* CSS: 10% = JS: horizontalMarginOffset */
 body > div {
     padding: 5% 10%;
