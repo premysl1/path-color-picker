@@ -99,8 +99,8 @@ main {
     gap: 32px;
 }
 
-main > *:first-child {
-    flex-grow: 4;
+main > :first-child {
+    flex-grow: 3;
     gap: 16px;
 }
 

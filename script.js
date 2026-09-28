@@ -238,6 +238,10 @@ const recentClrs = document.getElementById(`recent-clrs`);
 
 const ctxIV = imageViewer.getContext(`2d`);
 
+// state management
+
+let isCanvasInit = false;
+
 // canvas resizing
 
 const canvasContainer = document.querySelector(`*:has(> canvas)`);
@@ -266,8 +270,6 @@ const resizeObserver = new ResizeObserver(() => {
 });
 
 resizeObserver.observe(viewports);
-
-//
 
 let inputImg;
 let imageDataObj = null;
@@ -319,9 +321,11 @@ function calculateFit(img) {
 }
 
 function render(img) {
-    inputImg = img;
-    updateImageDataObj(img);
-    calculateFit(img);
+    if (!isCanvasInit) {
+        inputImg = img;
+        updateImageDataObj(img);
+        calculateFit(img);
+    }
     draw(img);
 }
 
@@ -690,25 +694,26 @@ function clipboardEnter(clr) {
 
 // render first file image
 
-function renderFile(file)
-{
-    const img = new Image();
-    if (typeof file !== `string`) {
-        const objectURL = URL.createObjectURL(file);
-        img.onload = () =>
-        {
-            render(img);
-            URL.revokeObjectURL(objectURL);
-        };
-        img.src = objectURL;
-    } else {
-        img.onload = () =>
-        {
-            render(img);
-        };
-        img.src = file;
-    }
-    return img;
+async function renderFile(file) {
+	const img = new Image();
+	let objectURL;
+
+	await new Promise(resolve => {
+		img.onload = () => {
+			render(img);
+
+			if (objectURL) {
+				URL.revokeObjectURL(objectURL);
+			}
+
+			resolve();
+		};
+
+		if (typeof file !== `string`) {
+			objectURL = URL.createObjectURL(file);
+			img.src = objectURL;
+		} else img.src = file;
+	});
 }
 
 // drag and drop
@@ -719,10 +724,6 @@ const dragNDropInput = document.getElementById(`drag-n-drop`);
 const dragNDropLabel = document.querySelector(`#input-img-screen label`);
 const svg = document.querySelector(`#input-img-screen svg`);
 const marchingAntGradient = document.getElementById(`marching-ant-gradient`);
-
-// state management
-
-let isCanvasInit = false;
 
 // image viewer background change
 
@@ -769,10 +770,10 @@ const initDeleteSamplesSpanAnimation = () =>
     abortDeleteSamplesSpanAnimation
     = addSlideRightAnimation(deleteSamplesSpan, deleteSamplesBtn);
 
-function manageCanvas(str, file) {
+async function manageCanvas(str, file) {
     if (str === `init`) {
         inputImgScreen.style.visibility = `hidden`;
-        renderFile(file);
+        await renderFile(file);
         initCanvasControls();
         paintRecentClrsFields();
         styleImageViewerBg();
