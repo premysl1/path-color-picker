@@ -8,7 +8,7 @@ A client-side web application for sampling and extracting continuous color palet
 - **Pixel Scope**: Real-time magnified pixel grid centered on the cursor for precise pixel inspection.
 - **Canvas Navigation**: Smooth zoom and right-click panning to navigate high-resolution images.
 - **Adjustable Frequency**: Configurable sampling interval to control palette density.
-- **Color Formats**: Real-time conversion across 11 formats:
+- **Color Formats**: Real-time conversion across every web color format:
   - HEX / HEXA
   - RGB / sRGB
   - HSL / HSLA
@@ -23,7 +23,7 @@ A client-side web application for sampling and extracting continuous color palet
 ## Technical Details
 
 - **HTML5 Canvas & ImageData**: Direct pixel buffer reading via `getImageData` with coordinate mapping that accounts for dynamic canvas scaling, aspect ratio fitting, and pan offsets.
-- **Color Science & Matrix Transformations**: Custom matrix transformations implementing sRGB linearization, LMS adaptation, CIELAB, Oklab/Oklch, and XYZ D50/D65 illuminant calculations.
+- Native state manipulation
 - **Responsive Layout**: `ResizeObserver` integration for synchronized canvas dimensions and viewport scaling.
 - **Zero Dependencies**: Pure HTML5, CSS3 (Grid, Flexbox, SVG masks), and modern JavaScript (ES6+).
 
