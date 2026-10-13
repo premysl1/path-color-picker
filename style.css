@@ -270,7 +270,7 @@ canvas {
 
 .options.bottom-group {
     padding: 8px;
-    background: oklch(0.2 0.13 196.64 / 1);
+    background: #008080d0;
 }
 
 .options.bottom-group > * {
