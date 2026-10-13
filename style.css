@@ -100,7 +100,7 @@ main {
 }
 
 main > :first-child {
-    flex-grow: 3;
+    flex-grow: 2.5;
     gap: 16px;
 }
 
@@ -118,16 +118,32 @@ main > :first-child {
     outline-offset: -1px;
     outline: 1px solid;
     pointer-events: none;
-    animation: 2s reveal backwards;
+    animation: 2s opacity backwards;
 }
 
-@keyframes reveal {
+hgroup {
+    animation:
+        2s opacity,
+        1s blur;
+}
+
+@keyframes opacity {
     from {
         opacity: 0;
     }
 
     to {
         opacity: 1;
+    }
+}
+
+@keyframes blur {
+    from {
+        filter: blur(4px);
+    }
+
+    to {
+        filter: blur(0px);
     }
 }
 
@@ -197,7 +213,7 @@ canvas {
     animation:
         calc(min((sibling-index() - 1), 1) * 12.5ms)
         calc((sibling-index() - 1) * 12.5ms)
-        reveal backwards;
+        opacity backwards;
 }
 
 #recent-clrs {
