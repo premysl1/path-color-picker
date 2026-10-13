@@ -1,6 +1,6 @@
 'use strict';
 
-import * as colorConversion from './color-conversion';
+import * as colorConversion from './color-conversion.js';
 
 // define viewports
 
