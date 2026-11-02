@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Path Color Picker
 
-## Getting Started
+A client-side web application for sampling and extracting continuous color palettes along custom drawn paths across images. Built with vanilla JavaScript and the HTML5 Canvas API with zero dependencies.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Path Sampling**: Hold left-click and drag across any image region to continuously sample colors along the cursor path.
+- **Pixel Scope**: Real-time magnified pixel grid centered on the cursor for precise pixel inspection.
+- **Canvas Navigation**: Smooth zoom and right-click panning to navigate high-resolution images.
+- **Adjustable Frequency**: Configurable sampling interval to control palette density.
+- **Color Formats**: Real-time conversion across every web color format:
+  - HEX / HEXA
+  - RGB / sRGB
+  - HSL / HSLA
+  - HWB
+  - OKLCH / OKLAB
+  - LCH / LAB
+  - XYZ D65 / XYZ D50
+- **Palette Management & Export**: Interactive color swatch list, batch clipboard copy, and `.txt` file export.
+- **Custom Background**: Single color or gradient canvas background for contrast checking.
+- **Client-Side Processing**: All image processing and pixel manipulation run locally in the browser with no server requests.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technical Details
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **HTML5 Canvas & ImageData**: Direct pixel buffer reading via `getImageData` with coordinate mapping that accounts for dynamic canvas scaling, aspect ratio fitting, and pan offsets.
+- Native state manipulation
+- **Responsive Layout**: `ResizeObserver` integration for synchronized canvas dimensions and viewport scaling.
+- **Zero Dependencies**: Pure HTML5, CSS3 (Grid, Flexbox, SVG masks), and modern JavaScript (ES6+).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Controls
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Action | Input |
+| :--- | :--- |
+| Sample Colors | `Left-click + Drag` |
+| Pan Canvas | `Right-click + Drag` |
+| Load Image | Drag and drop, file selector, or example image button |
+| Change Color Format | Format dropdown |
+| Adjust Frequency | Sampling frequency number input |
+| Export | Copy button or Download `.txt` button |
