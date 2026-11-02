@@ -1,0 +1,544 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+html {
+    scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
+}
+
+body {
+    background: black;
+    color: white;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        'wdth' 100;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    --line: rgba(255, 255, 255, 0.1);
+    background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: linear-gradient(black, transparent);
+}
+
+button { font-family: Arial }
+
+/* CSS: 10% = JS: horizontalMarginOffset */
+body > div {
+    padding: 5% 10%;
+}
+
+:has(> #intro) {
+    margin-bottom: 64px;
+    justify-content: start;
+}
+
+#intro {
+    padding: 32px;
+    border: 1px solid dimgrey;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5),
+        oklch(0.25 0.15458 194.807 / 0.8), rgba(0, 0, 0, 0.5));
+    background-size: 200% 100%;
+    animation: slide 16s linear infinite;
+}
+
+@keyframes slide {
+    from { background-position: 0% 0%; }
+    to   { background-position: 200% 0%; }
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+h1, h1 + p {
+    text-align: center;
+}
+
+:has(> h1) {
+    margin: 64px 0;
+}
+
+h2 {
+    font-size: large;
+    margin-bottom: 16px;
+}
+
+#intro > :last-child {
+    margin-top: 16px;
+    font-style: italic;
+}
+
+#intro > :last-child * {
+    font-style: initial;
+}
+
+a {
+    color: oklch(1 0.4 190);
+}
+
+a:active {
+    color: oklch(1 0.4 140);
+}
+
+a:visited {
+    color: oklch(0.5 0.4 325);
+}
+
+main {
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+main > :first-child {
+    flex-grow: 2.5;
+    gap: 16px;
+}
+
+#sampling-screen {
+    height: 80vh;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#viewports.active::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    outline-offset: -1px;
+    outline: 1px solid;
+    pointer-events: none;
+    animation: 2s opacity backwards;
+}
+
+hgroup {
+    animation:
+        2s opacity,
+        1s blur;
+}
+
+@keyframes opacity {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes blur {
+    from {
+        filter: blur(4px);
+    }
+
+    to {
+        filter: blur(0px);
+    }
+}
+
+.marching-ants {
+    animation: march 4s linear infinite;
+}
+
+@keyframes march {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: -128;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#marching-ant-gradient {
+    background: conic-gradient(from var(--angle),
+    oklch(0.25 0 0), oklch(1 0 0));
+    animation: rotate 16s linear infinite;
+
+    mask-image: url(#dash-mask);
+}
+
+@keyframes rotate {
+    to {
+        --angle: 360deg
+    }
+}
+
+#input-img-screen label {
+    width: 75%;
+    font-size: x-large;
+    text-align: center;
+}
+
+#drag-n-drop {
+    opacity: 0;
+}
+
+#viewports {
+    grid-template: 1fr 1fr / 3fr 1fr;
+}
+
+*:has(> canvas) {
+    grid-row: span 2;
+}
+
+canvas {
+    cursor: pointer;
+}
+
+#scope {
+    grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+}
+
+#scope.active * {
+    outline: 1px dotted;
+    translate: 1px 0;
+    animation:
+        calc(min((sibling-index() - 1), 1) * 12.5ms)
+        calc((sibling-index() - 1) * 12.5ms)
+        opacity backwards;
+}
+
+#recent-clrs {
+    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+}
+
+#recent-clrs div:first-child {
+    grid-area: span 2 / span 2;
+}
+
+#recent-clrs *:first-child:hover {
+    scale: unset;
+}
+
+#recent-clrs *:hover {
+    scale: 1.25;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.options.top-group {
+    justify-content: end;
+}
+
+#clear-canvas,
+#delete-samples,
+#copy {
+    overflow: hidden;
+}
+
+#clear-canvas *,
+#delete-samples * {
+    display: block;
+    padding: 8px;
+    text-box: trim-both cap alphabetic;
+    font-weight: bold;
+}
+
+#clear-canvas:not(.active),
+#delete-samples:not(.active),
+#copy:not(.active) {
+    background: dimgrey;
+}
+
+#clear-canvas,
+#delete-samples {
+    border-radius: 0 0 5px 0;
+}
+
+.options.bottom-group {
+    padding: 8px;
+    background: #008080d0;
+}
+
+.options.bottom-group > * {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#sampling-frequency,
+#clr-format {
+    font-size: larger;
+}
+
+#image-viewer {
+    background:
+        repeating-conic-gradient(
+            var(--image-viewer-bg-clr) 0 25%,
+            var(--image-viewer-bg-clr-two) 0 50%)
+        0 / 20px 20px;
+}
+
+#sampling-frequency,
+#clr-format,
+#image-viewer-bg-clr,
+#image-viewer-bg-clr-two {
+    height: calc(12px + 1rcap);
+}
+
+#sampling-frequency {
+    padding-left: 1rch;
+}
+
+#clr-format {
+    padding-left: 0.5rch;
+}
+
+*:has(> #image-viewer-bg-clr) {
+    gap: 8px;
+}
+
+#output {
+    flex-grow: 1;
+    gap: 16px;
+}
+
+#sampling-frequency {
+    width: 5ch;
+    border-radius: 2.5px;
+}
+
+*:has(> #clipboard) {
+    padding: 8px;
+    border: 4px dashed dimgrey;
+    flex-direction: column;
+    background: black;
+}
+
+*:has(> #clipboard).active {
+    border-color: white;
+}
+
+.options.top-group button.active:hover,
+#copy.active:hover {
+    background: goldenrod;
+}
+
+#copy {
+    padding: 8px;
+    font-weight: bolder;
+}
+
+:has(> #counter) * {
+    margin-bottom: 8px;
+}
+
+:has(> #copy) {
+    margin-bottom: 8px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    text-box: trim-both cap alphabetic;
+}
+
+:has(> #counter) {
+    font-family: monospace;
+    font-size: larger;
+}
+
+.slide-right {
+    animation: slide-right 2s linear;
+}
+
+@keyframes slide-right {
+    50% {
+        translate: 100% 0;
+    } 50.0001% {
+        translate: -100% 0;
+    } to {
+        translate: 0;
+    }
+}
+
+#copy.copied {
+    background: lime;
+}
+
+#clipboard {
+    --row: calc(1rem + 4px);
+    min-height: calc(4 * var(--row));
+    max-height: calc(8px + 1cap + 8px + 16px + 80vh + 16px + 12px + 1rcap + 8px + 8px
+                     - 4px - 8px - 8px - 1cap - 8px - 8px - 8px - 4px - 16px - 4px - 16px - 1cap - 16px - 4px);
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
+}
+
+#clipboard.empty::after {
+    margin: auto;
+    content: 'Color clipboard is empty.';
+    color: lightgrey;
+}
+
+#clipboard li {
+    height: var(--row);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#clipboard code {
+    padding: 2px 0;
+    font-size: large;
+}
+
+#clipboard li:nth-child(5n) {
+    background: linear-gradient(to right,
+    oklch(27.116% 0.18794 264.073), oklch(45.203% 0.3133 264.073));
+}
+
+#clipboard li:hover {
+    background: linear-gradient(to right,
+    oklch(37.116% 0.18794 154.073), oklch(55.203% 0.3133 154.073));
+}
+
+#clipboard div {
+    border: 1px dotted white;
+    border-bottom: none;
+    padding-bottom: 1px;
+    width: var(--row);
+    height: var(--row);
+}
+
+#clipboard li:last-child div {
+    border-bottom: 1px dotted white;
+    padding: 0;
+}
+
+#clipboard li div:hover {
+    border: none;
+}
+
+*:has(> #download) {
+    gap: 16px;
+}
+
+#download {
+    box-sizing: content-box;
+    color: white;
+    font-weight: bolder;
+    padding: 16px;
+    border: 4px solid transparent;
+    background:
+        linear-gradient(black) padding-box,
+        linear-gradient(to right, dimgrey, grey) border-box;
+}
+
+#download.active {
+    background:
+        linear-gradient(black) padding-box,
+        linear-gradient(to right, lime, green) border-box;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@property --hue-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+#download.active:hover {
+    border-color: transparent;
+    background:
+        linear-gradient(black) padding-box,
+        conic-gradient(from var(--angle),
+            oklch(1 0.4 30),
+            oklch(1 0.4 67.5) 30deg,
+            oklch(1 0.4 135) 60deg,
+            oklch(1 0.4 127.5) 120deg,
+            oklch(1 0.4 255) 180deg,
+            oklch(1 0.4 15) 240deg,
+            oklch(1 0.4 30) 300deg) border-box;
+    filter: hue-rotate(var(--hue-angle));
+    animation: rotate-gradient 4s linear infinite, rotate-hue 2s linear infinite;
+}
+
+@keyframes rotate-gradient {
+    to {
+        --angle: 360deg
+    }
+}
+
+@keyframes rotate-hue {
+    to {
+        --hue-angle: 360deg
+    }
+}
+
+footer {
+    justify-content: space-between;
+    align-items: end;
+    margin-top: 64px;
+    padding: 16px;
+    background: darkblue;
+}
+
+footer div {
+    flex-direction: column;
+    gap: 8px;
+}
+
+#load-example-img {
+    text-align: end;
+    color: oklch(1 0.4 190);
+    font-family: monospace;
+    cursor: pointer;
+}
+
+#load-example-img:active {
+    color: oklch(1 0.4 140);
+}
+
+summary {
+    display: flex;
+    align-items: center;
+}
+
+summary::before {
+    color: red;
+    margin-right: 8px;
+    content: '+';
+}
+
+details[open] summary::before {
+    color: white;
+    translate: 0 -2px;
+    content: '-';
+}
+
+details[open] summary {
+    margin-bottom: 8px;
+}
+
+details[open] summary span {
+    background: darkslategrey;
+}
