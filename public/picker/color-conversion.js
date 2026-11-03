@@ -1,9 +1,12 @@
+
 // rgb color conversion for every web color format
 // source: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Colors/Color_format_converter
 
 // for every final conversion:
 //     input → {r: int, g: int, b: int: alpha: float}
 //     output → string
+
+'use strict';
 
 const LRGB_LMS_MATRIX = [
   [0.4122214708, 0.5363325363, 0.0514459929],
