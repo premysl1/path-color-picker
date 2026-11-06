@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 html {
     scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
@@ -29,7 +29,7 @@ body::before {
     mask-image: linear-gradient(black, transparent);
 }
 
-button { font-family: Arial }
+button { font-family: Arial }*/
 
 /* CSS: 10% = JS: horizontalMarginOffset */
 body > div {
@@ -416,6 +416,15 @@ canvas {
     oklch(37.116% 0.18794 154.073), oklch(55.203% 0.3133 154.073));
 }
 
+#clipboard li:last-child div {
+    border-bottom: 1px dotted white;
+    padding: 0;
+}
+
+#clipboard li:hover div {
+    border: none;
+}
+
 #clipboard div {
     border: 1px dotted white;
     border-bottom: none;
@@ -424,20 +433,11 @@ canvas {
     height: var(--row);
 }
 
-#clipboard li:last-child div {
-    border-bottom: 1px dotted white;
-    padding: 0;
-}
-
-#clipboard li div:hover {
-    border: none;
-}
-
 *:has(> #download) {
-    gap: 16px;
+  gap: 16px;
 }
 
-#download {
+/*#download {
     box-sizing: content-box;
     color: white;
     font-weight: bolder;
@@ -492,9 +492,9 @@ canvas {
     to {
         --hue-angle: 360deg
     }
-}
+}*/
 
-footer {
+/*footer {
     justify-content: space-between;
     align-items: end;
     margin-top: 64px;
@@ -541,4 +541,4 @@ details[open] summary {
 
 details[open] summary span {
     background: darkslategrey;
-}
+}*/

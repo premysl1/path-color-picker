@@ -1,15 +1,25 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import './styles/base.css';
+import './styles/globals.css';
+import { Geist } from 'next/font/google';
+import Intro from './components/Intro';
+import Footer from './components/footer/Footer';
 
-export const metadata: Metadata = {
-  title: "Path Color Picker",
-  description: "Extract color palettes by drawing a path across an image.",
-};
+const geist = Geist({
+  subsets: ['latin'],
+});
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={geist.className}>
+      <body>
+        <Intro/>
+        {children}
+        <Footer/>
+      </body>
     </html>
   );
 }
