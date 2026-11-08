@@ -32,7 +32,7 @@ body::before {
 button { font-family: Arial }*/
 
 /* CSS: 10% = JS: horizontalMarginOffset */
-body > div {
+/*body > div {
     padding: 5% 10%;
 }
 
@@ -92,7 +92,7 @@ a:active {
 
 a:visited {
     color: oklch(0.5 0.4 325);
-}
+}*/
 
 main {
     flex-wrap: wrap;
@@ -345,7 +345,7 @@ canvas {
 :has(> #counter) * {
     margin-bottom: 8px;
 }
-
+/*
 :has(> #copy) {
     margin-bottom: 8px;
     justify-content: space-between;
@@ -358,7 +358,7 @@ canvas {
 :has(> #counter) {
     font-family: monospace;
     font-size: larger;
-}
+}*/
 
 .slide-right {
     animation: slide-right 2s linear;
@@ -374,7 +374,7 @@ canvas {
     }
 }
 
-#copy.copied {
+/*#copy.copied {
     background: lime;
 }
 
@@ -435,7 +435,7 @@ canvas {
 
 *:has(> #download) {
   gap: 16px;
-}
+}*/
 
 /*#download {
     box-sizing: content-box;

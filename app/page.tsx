@@ -1,7 +1,7 @@
-import Top from "./components/options/Top";
-import Screen from "./components/Screen";
-import Bottom from "./components/options/Bottom";
-import Pane from "./components/samples-pane/Pane";
+import Top from "./components/menus/Top";
+import Screen from "./components/screens/ScreensContainer";
+import Bottom from "./components/menus/Bottom";
+import Container from "./components/samples/Container";
 
 export default function Page() {
   return (
@@ -11,7 +11,7 @@ export default function Page() {
         <Screen/>
         <Bottom/>
       </section>
-      <Pane/>
+      <Container/>
     </main>
   );
 }

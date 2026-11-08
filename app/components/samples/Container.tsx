@@ -1,14 +1,17 @@
+'use client';
 
-import Copy from './Copy';
 import Counter from './Counter';
+import Copy from './Copy';
 import Clipboard from './Clipboard';
 import Download from './Download';
 
-export default function SamplesPane() {
+import handleMoveGlowEffect from '../../scripts/handleMoveGlowEffect';
+
+export default function Container() {
   return (
-    <section id="Samples-pane">
-      {/*<h2>Samples</h2>*/}
-      <div>
+    <section id="samples-Container">
+      <h2>Samples:</h2>
+      <div onMouseMove={handleMoveGlowEffect} className="glowEffect">
         <div>
           <Counter/>
           <Copy/>

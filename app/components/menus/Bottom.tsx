@@ -3,11 +3,11 @@ export default function Bottom() {
     <menu>
       <li>
         <label htmlFor="sampling-frequency">Sampling frequency:</label>
-        <input id="sampling-frequency" type="number" min="1" value="50"/>
+        <input id="sampling-frequency" type="number" min="1" defaultValue="50"/>
       </li>
       <li>
-        <label htmlFor="clr-format">Format:</label>
-        <select id="clr-format">
+        <label htmlFor="color-format">Format:</label>
+        <select id="color-format">
           <option value="RGB">RGB</option>
           <option value="sRGB">sRGB</option>
           <option value="HEX">HEX</option>
@@ -22,10 +22,10 @@ export default function Bottom() {
         </select>
       </li>
       <li>
-        <label>Background:</label>
+        <label htmlFor="image-viewer-background-color">Backgrounds:</label>
         <div>
-          <input id="image-viewer-bg-clr" type="color" value="#0f003c"/>
-          <input id="image-viewer-bg-clr-two" type="color"/>
+          <input id="image-viewer-background-color" type="color" defaultValue="#0f003c"/>
+          <input type="color"/>
         </div>
       </li>
     </menu>
