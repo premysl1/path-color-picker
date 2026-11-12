@@ -1,6 +1,6 @@
 import DragAndDrop from './DragAndDrop';
 
-import handleMoveGlowEffect from '../../../scripts/handleMoveGlowEffect';
+import handleMoveGlowEffect from '../../../scripts/handleGlowEffect';
 
 export default function Container() {
   return (

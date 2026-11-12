@@ -1,17 +1,28 @@
-import Top from "./components/menus/Top";
-import Screen from "./components/screens/ScreensContainer";
-import Bottom from "./components/menus/Bottom";
-import Container from "./components/samples/Container";
+
+import ImageInput from './components/navigation/ImageInput';
+import Controls from './components/navigation/Controls';
+import Intro from './components/navigation/Intro';
+import Screen from './components/Screen/Screen';
 
 export default function Page() {
   return (
-    <main id="Page">
-      <section>
-        <Top/>
-        <Screen/>
-        <Bottom/>
-      </section>
-      <Container/>
+    <main id="Page" className="blur">
+      <nav id="navigation">
+        <menu>
+          <li>
+            <ImageInput/>
+          </li>
+          <li>
+            <Controls/>
+          </li>
+          <li>
+            <header>
+              <Intro/>
+            </header>  
+          </li>
+        </menu>
+      </nav>
+      <Screen/>
     </main>
   );
 }

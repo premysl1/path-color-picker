@@ -1,8 +1,9 @@
 html {
+  height: 100%;
   scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
 
   body {
-    &::before {
+    /*&::before {
       content: '';
       position: fixed;
       inset: 0;
@@ -13,13 +14,13 @@ html {
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
       background-size: 24px 24px;
       mask-image: linear-gradient(black, transparent);
-    }
+    }*/
 
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    height: inherit;
     background: black;
     color: white;
+    /*display: flex;
+    flex-direction: column;
 
     a {
       color: oklch(1 0.4 190);
@@ -31,571 +32,387 @@ html {
       &:visited {
         color: oklch(0.5 0.4 325);
       }
-    }
+    }*/
   }
 }
 
-#Header {
-  margin: 40px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 40px;
+/**:focus {
+  outline: none;
+}*/
 
-  hgroup {
+*:focus {
+  outline: 1px solid cyan;
+  outline-offset: -1px;
+}
+
+nav {
+  background: #0a0a0a;
+
+  > menu {
+    padding: 4px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    flex-grow: 8;
+    flex-wrap: wrap;
+    gap: 16px;
 
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 8px;
-    }
+    :has(#image-input)>button {
+      padding: 0.5ch;
+      padding-right: 0.9ch;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgb(15, 15, 15);
+      color: white;
 
-    * {
-      text-align: center;
-    }
-  }
-  
-  section {
-    &::before {
-      z-index: -1;
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to top right,
-        #0000 50%,
-        #0ff7
-      );
-    }
+      &:hover {
+        background: rgb(45, 45, 45);
+      }
 
-    position: relative;
-    padding: 32px;
-    flex-grow: 1;
-    outline: 1px solid cyan;
-    outline-offset: -1px;
-
-    h2 {
-      font-size: large;
-      margin-bottom: 16px;
-    }
-
-    ul {
-      margin-bottom: 16px;
-    }
-  
-    i {
-      display: block;
-    }
-  
-    span {
-      font-weight: bolder;
+      &:active {
+        background: rgb(90, 90, 90);
+      }
     }
   }
-}
-
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@property --hue-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotate-gradient {
-  to {
-    --angle: 360deg;
-  }
-}
-
-@keyframes rotate-hue {
-  to {
-    --hue-angle: 360deg;
-  }
-}
-
-@keyframes opacity {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes march {
-  to { stroke-dashoffset: -128; }
 }
 
 #Page {
-  --disabled: #fffc;
+  height: inherit;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 
-  margin: 0 10%;
-	flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-
-  > section:first-child {
-    flex-grow: 2.5;
+  #Controls {
+    padding: 0.5ch;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 16px;
+    background: #0f0f0f;
 
-    > menu:first-child {
-      margin-right: 1.25%;
+    :has(#sampling-frequency) {
       display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-
-      > li:last-child {
-        display: flex;
-        gap: 8px;
-      }
-
-      #clear-canvas,
-      #delete-samples {
-        overflow: hidden;
-        border-radius: 0 0 5px 0;
-
-        span {
-          display: block;
-          padding: 8px;
-          text-box: trim-both cap alphabetic;
-          font-weight: bold;
-        }
-
-        &:not(.enabled) {
-          background: dimgrey;
-        }
-
-        &.enabled:hover {
-          background: goldenrod;
-        }
-      }
-    }
-
-    #Screens-container {
-      height: 80vh;
-      position: relative;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-
-      #Viewports {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template: 1fr 1fr / 3fr 1fr;
-
-        > div:has(> canvas) {
-          grid-row: span 2;
-        }
-
-        canvas {
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        }
-
-        #image-viewer {
-          background:
-            repeating-conic-gradient(
-              var(--image-viewer-bg-clr, #0f003c) 0 25%,
-              var(--image-viewer-bg-clr-two, #000) 0 50%)
-            0 / 20px 20px;
-        }
-
-        #scope {
-          display: grid;
-          grid-template: repeat(9, 1fr) / repeat(9, 1fr);
-
-          &.enabled * {
-            outline: 1px dotted;
-            translate: 1px 0;
-            animation:
-              calc(min((sibling-index() - 1), 1) * 12.5ms)
-              calc((sibling-index() - 1) * 12.5ms)
-              opacity backwards;
-          }
-        }
-
-        #recent-clrs {
-          display: grid;
-          grid-template: repeat(5, 1fr) / repeat(5, 1fr);
-
-          div:first-child {
-            grid-area: span 2 / span 2;
-
-            &:hover {
-              scale: unset;
-            }
-          }
-
-          div:hover {
-            scale: 1.25;
-          }
-        }
-
-        &.enabled::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          outline-offset: -1px;
-          outline: 1px solid;
-          pointer-events: none;
-          animation: 2s opacity backwards;
-        }
-      }
-
-      #Drag-and-drop {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        place-items: center;
-
-        #marching-ant-gradient {
-          width: 97.5%;
-          height: 97.5%;
-          position: absolute;
-          background: conic-gradient(from var(--angle), oklch(0.25 0 0), oklch(1 0 0));
-          animation: rotate-gradient 16s linear infinite;
-          mask-image: url(#dash-mask);
-        }
-
-        .marching-ants {
-          animation: march 4s linear infinite;
-        }
-
-        svg {
-          position: absolute;
-          background: linear-gradient(45deg, #0ff1, transparent);
-        }
-        
-        #drag-and-drop-input {
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          opacity: 0;
-        }
-
-        label {
-          width: 75%;
-          font-size: x-large;
-          text-align: center;
-        }
-      }
-    }
-
-    > menu:last-child {
-      padding: 8px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-      background: #088d;
-
-      :has(> #image-viewer-background-color) {
-        display: flex;
-        gap: 8px;
-      }
+      align-items: center;
+      gap: 8px;
 
       #sampling-frequency {
+        height: 100%;
         width: 5ch;
-        padding-left: 1rch;
-        border-radius: 2.5px;
+        padding-left: 0.5ch;
       }
+    }
+
+    :has(#color-format) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
 
       #color-format {
-        padding-left: 0.5rch;
+        height: 100%;
+        width: 9ch;
+        padding-left: 0.2ch;
       }
+    }
 
-      #sampling-frequency,
-      #color-format {
-        font-size: larger;
-      }
+    :has(#image-viewer-background-color) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
 
-      input,
-      select {
-        height: calc(12px + 1rcap);
-      }
-
-      > * {
+      div {
+        height: 100%;
         display: flex;
-        align-items: center;
-        gap: 16px;
+        gap: 8px;
+
+        input {
+          height: 100%;
+        }
       }
     }
   }
 
-  > #samples-Container {
+  #Screen {
+    margin: 8px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    flex-grow: 1;
-  
-    > :nth-child(2) {
-      width: 100%;
-      padding: 8px;
-      border: 2px solid var(--disabled);
+  }
+}
+
+header {
+  dialog {
+    margin: 0;
+    position: absolute;
+    inset: 0;
+    place-self: center;
+    background: black;
+    color: white;
+
+    hgroup {
+      z-index: 0;
+      height: 14em;
+      margin-bottom: 20px;
+      position: relative;
       display: flex;
       flex-direction: column;
-  
-      > :first-child {
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        text-box: trim-both cap alphabetic;
+      justify-content: center;
 
-        #Counter {
-          font-family: monospace;
-          font-size: larger;
-        
-          span {
-            margin-bottom: 8px;
-          }
-        }
-
-        #Copy-button {
-          padding: 8px;
-          font-weight: bolder;
-          overflow: hidden;
-          background: white;
-
-          &.enabled {
-            &:hover {
-              background: goldenrod;
-          
-              &.active {
-                background: lime;
-              }
-            }
-          }
-        }
+      &::before {
+        content: '';
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: linear-gradient(to left,
+            #0000,
+            rgba(0, 255, 21, 0.226),
+            rgba(0, 255, 21, 0.45),
+            #0000 35%);
+        background-size: 200% 100%;
+        animation: slide 8s ease-in infinite;
       }
 
-      #Clipboard {
-        &.empty::after {
-          content: 'Color clipboard is empty.';
-          margin: auto;
-        }
+      h1 {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
 
-        --row: calc(1rem + 4px);
-        min-height: calc(4 * var(--row));
-        max-height: calc(
-          8px
-          + 1cap
-          + 8px
-          + 16px
-          + 80vh
-          + 16px
-          + 12px
-          + 1rcap
-          + 8px
-          + 8px
-          - 4px
-          - 8px
-          - 8px
-          - 1cap
-          - 8px
-          - 8px
-          - 8px
-          - 4px
-          - 16px
-          - 4px
-          - 16px
-          - 1cap
-          - 16px
-          - 4px
-        );
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
-      
-        li {
-          height: var(--row);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      
-          &:nth-child(5n) {
-            background: linear-gradient(
-              to right,
-              oklch(27.116% 0.18794 264.073),
-              oklch(45.203% 0.3133 264.073)
-            );
-          }
-      
-          &:hover {
-            background: linear-gradient(
-              to right,
-              oklch(37.116% 0.18794 154.073),
-              oklch(55.203% 0.3133 154.073)
-            );
-      
-            div {
-              border: none;
-            }
-          }
-      
-          &:last-child div {
-            border-bottom: 1px dotted white;
-            padding: 0;
-          }
-      
-          code {
-            padding: 2px 0;
-            font-size: large;
-          }
-      
-          div {
-            width: var(--row);
-            height: var(--row);
-            border: 1px dotted white;
-            border-bottom: none;
-            padding-bottom: 1px;
-          }
-        }
+      span {
+        background: #00000047;
+        padding: 4px 6px;
+      }
+
+      * {
+        text-align: center;
       }
     }
-  
-    > :nth-child(3) {
-      display: flex;
-      align-items: center;
-      gap: 16px;
 
-      #Download-button {
-        box-sizing: content-box;
-        padding: 16px;
-        border: 2px solid var(--disabled);
-        font-weight: bolder;
-        color: white;
-        background: transparent;
+    section {
+      flex-grow: 1;
+      z-index: 0;
+      height: 14em;
+      padding: 32px;
+      position: relative;
+      outline: 1px solid cyan;
+      outline-offset: -1px;
 
-        &.enabled {
-          border-color: transparent;
-          background:
-            linear-gradient(black) padding-box,
-            conic-gradient(
-              from var(--angle),
-              lime,
-              green
-            ) border-box;
-          animation: rotate-gradient 4s linear infinite;
-        }
-      
-        &.enabled:hover {
-          border-color: transparent;
-          background:
-            linear-gradient(black) padding-box,
-            conic-gradient(
-              from var(--angle),
-              oklch(1 0.4 30),
-              oklch(1 0.4 67.5) 30deg,
-              oklch(1 0.4 135) 60deg,
-              oklch(1 0.4 127.5) 120deg,
-              oklch(1 0.4 255) 180deg,
-              oklch(1 0.4 15) 240deg,
-              oklch(1 0.4 30) 300deg
-            ) border-box;
-          filter: hue-rotate(var(--hue-angle));
-          animation:
-            rotate-gradient 4s linear infinite,
-            rotate-hue 2s linear infinite;
-        }
+      &::before {
+        content: '';
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top right,
+            #0000 50%,
+            #0ff7);
       }
+
+      h2 {
+        font-size: large;
+        margin-bottom: 16px;
+      }
+
+      ul {
+        margin-bottom: 16px;
+      }
+
+      i {
+        display: block;
+      }
+
+      span {
+        font-weight: bolder;
+      }
+    }
+
+    #minimizeButton {
+      width: 4ch;
+      height: 3ch;
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: grid;
+      place-items: center;
+      background: rgb(15, 15, 15);
+
+      &:hover {
+        background: rgb(45, 45, 45);
+      }
+
+      &:active {
+        background: rgb(90, 90, 90);
+      }
+    }
+  }
+
+  #maximizeButton {
+    width: 3ch;
+    height: 3ch;
+    position: absolute;
+    bottom: 1ch;
+    right: 1ch;
+    border-radius: 50%;
+    background: #0f0f0f;
+    color: white;
+    outline: 1px solid white;
+
+    &:hover {
+      background: rgb(45, 45, 45);
+    }
+
+    &:active {
+      background: rgb(90, 90, 90);
+    }
+
+    > img {
+      width: 60%;
+      height: 60%;
+      translate: 6px -1px;
     }
   }
 }
 
-#Footer {
-  position: relative;
-  margin-top: 64px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  background: darkblue;
-
-  & > :first-child {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+@keyframes slide {
+  from {
+    background-position: 0% 0%;
   }
 
-  details {
-    display: inline-block;
-
-    &[open] {
-      summary::before {
-        color: white;
-        translate: 0 -2px;
-        content: '-';
-      }
-
-      summary {
-        margin-bottom: 8px;
-      }
-
-      span {
-        background: darkslategrey;
-      }
-    }
-  }
-
-  summary {
-    display: flex;
-    align-items: center;
-
-    &::before {
-      color: red;
-      margin-right: 8px;
-      content: '+';
-    }
-  }
-
-  #Load-example-image-button {
-    position: absolute;
-    right: 16px;
-    color: oklch(1 0.4 190);
-    background: none;
-    text-align: end;
-    font-family: monospace;
-
-    &:enabled {
-      color: oklch(1 0.4 140);
-    }
+  to {
+    background-position: 200% 0%;
   }
 }
 
 @property --glow-color {
-	syntax: '<color>';
-	inherits: false;
-	initial-value: transparent;
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
 }
 
 .glowEffect {
   --x: 50%;
   --y: 50%;
   --glow-color: transparent;
-  background-image: radial-gradient(
-    circle 100px at var(--x) var(--y),
-    var(--glow-color),
-    transparent
-  );
+  background-image: radial-gradient(circle 100px at var(--x) var(--y),
+      var(--glow-color),
+      transparent);
   transition: --glow-color 500ms;
-    
+
   &:hover {
     --glow-color: rgb(0 255 150 / 40%);
+  }
+}
+
+.blur {
+  filter: blur(1px) grayscale(80%);
+}
+
+#viewports {
+  flex: 0.75;
+  display: grid;
+  grid-template: 1fr 1fr / 6fr 3fr;
+  gap: 8px;
+  overflow: hidden;
+
+  :has(> #image-viewer) {
+    grid-row: span 2;
+
+    #image-viewer {
+      width: 100%;
+      height: 100%;
+      outline: 1px solid;
+      outline-offset: -1px;
+      cursor: pointer;
+      background:
+        repeating-conic-gradient(var(--image-viewer-bg-clr, #0f003c) 0 25%,
+        var(--image-viewer-bg-clr-two, #000) 0 50%) 0 / 20px 20px;
+    }
+  }
+
+  #scope {
+    display: grid;
+    grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+
+    & > div {
+      outline: 1px solid;
+      outline-offset: -1px;      
+      animation:
+        calc(min((sibling-index() - 1), 1) * 12.5ms) calc((sibling-index() - 1) * 12.5ms) opacity backwards;
+    }
+  }
+
+  #recent-colors {
+    display: grid;
+    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+
+    div {
+      outline: 1px solid;
+      outline-offset: -1px;
+
+      &:first-child {
+        grid-area: span 2 / span 2;
+
+        &:hover {
+          scale: unset;
+        }
+      }
+
+      &:hover {
+        scale: 1.25;
+      }
+    }
+  }
+}
+
+.splitter {
+  width: 8px;
+  cursor: col-resize;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+#clipboard {
+  flex: 0.25;
+  padding: 4px;
+  outline: 1px solid;
+  outline-offset: -1px;
+  overflow-y: auto;
+  scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
+
+  li {
+    height: var(--row);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    --row: calc(1rem + 4px);
+    
+    &:nth-child(5n) {
+      background: linear-gradient(to right,
+          oklch(27.116% 0.18794 264.073),
+          oklch(45.203% 0.3133 264.073));
+    }
+
+    &:hover {
+      background: white;
+      color: black;
+
+      div {
+        border: none;
+      }
+    }
+
+    &:last-child div {
+      border-bottom: 1px dotted white;
+      padding: 0;
+    }
+
+    code {
+      padding: 2px 0;
+      font-size: large;
+    }
+
+    div {
+      width: var(--row);
+      height: var(--row);
+      border: 1px dotted white;
+      border-bottom: none;
+      padding-bottom: 1px;
+    }
   }
 }

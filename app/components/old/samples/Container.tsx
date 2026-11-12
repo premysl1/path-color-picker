@@ -2,10 +2,10 @@
 
 import Counter from './Counter';
 import Copy from './Copy';
-import Clipboard from './Clipboard';
+import Clipboard from '../Clipboard';
 import Download from './Download';
 
-import handleMoveGlowEffect from '../../scripts/handleMoveGlowEffect';
+import handleMoveGlowEffect from '../../scripts/handleGlowEffect';
 
 export default function Container() {
   return (

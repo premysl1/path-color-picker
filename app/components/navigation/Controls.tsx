@@ -1,8 +1,8 @@
-export default function Bottom() {
+export default function Controls() {
   return (
-    <menu>
+    <menu id="Controls">
       <li>
-        <label htmlFor="sampling-frequency">Sampling frequency:</label>
+        <label htmlFor="sampling-frequency">Frequency:</label>
         <input id="sampling-frequency" type="number" min="1" defaultValue="50"/>
       </li>
       <li>
@@ -22,7 +22,7 @@ export default function Bottom() {
         </select>
       </li>
       <li>
-        <label htmlFor="image-viewer-background-color">Backgrounds:</label>
+        <label htmlFor="image-viewer-background-color">Background:</label>
         <div>
           <input id="image-viewer-background-color" type="color" defaultValue="#0f003c"/>
           <input type="color"/>
