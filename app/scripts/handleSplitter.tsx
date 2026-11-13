@@ -97,7 +97,7 @@ event: React.PointerEvent) {
   const rightPanelGrow = 1 - leftPanelGrow;
   const topRightPanelGrow = (start.topRightPanelHeight + event.clientY - start.y) / lengths.topRight;
   const bottomRightPanelGrow = 1 - topRightPanelGrow;
-
+  console.log(leftPanelGrow, rightPanelGrow)
   leftPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, leftPanelGrow)));
   rightPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, rightPanelGrow)));
   topRightPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, topRightPanelGrow)));

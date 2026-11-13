@@ -25,12 +25,11 @@ export default function Screen() {
 
   useEffect(() => {
     const applyHeight = new ResizeObserver(() => {
-      if (!(Screen.current && clipboard.current)) {
-        return;
-      }
-
       const navigation = document.getElementById(`navigation`);
-      if (!navigation) {
+      if (!(navigation
+      && Screen.current
+      && viewports.current
+      && clipboard.current)) {
         return;
       }
 
@@ -39,11 +38,14 @@ export default function Screen() {
         .margin
         .replaceAll(/[^\d.]/g, ``));
 
-      clipboard.current.style.height = String(
+      const cappedHeight = String(
           innerHeight
         - navigation.getBoundingClientRect().height
         - ScreenMargin * 2)
         + `px`;
+
+      viewports.current.style.height = cappedHeight;
+      clipboard.current.style.height = cappedHeight;
     });
 
     const screenResize = new ResizeObserver(() => {
