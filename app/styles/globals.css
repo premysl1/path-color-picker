@@ -303,64 +303,82 @@ header {
 
 #viewports {
   flex: 0.75;
-  display: grid;
-  grid-template: 1fr 1fr / 6fr 3fr;
-  gap: 8px;
+  display: flex;
   overflow: hidden;
 
-  :has(> #image-viewer) {
-    grid-row: span 2;
+  > div:first-child {
+    flex: 0.666;
 
     #image-viewer {
       width: 100%;
       height: 100%;
       outline: 1px solid;
       outline-offset: -1px;
-      cursor: pointer;
       background:
         repeating-conic-gradient(var(--image-viewer-bg-clr, #0f003c) 0 25%,
         var(--image-viewer-bg-clr-two, #000) 0 50%) 0 / 20px 20px;
     }
   }
 
-  #scope {
-    display: grid;
-    grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+  > div:nth-child(3) {
+    flex: 0.333;
+    display: flex;
+    flex-direction: column;
 
-    & > div {
-      outline: 1px solid;
-      outline-offset: -1px;      
-      animation:
-        calc(min((sibling-index() - 1), 1) * 12.5ms) calc((sibling-index() - 1) * 12.5ms) opacity backwards;
-    }
-  }
-
-  #recent-colors {
-    display: grid;
-    grid-template: repeat(5, 1fr) / repeat(5, 1fr);
-
-    div {
-      outline: 1px solid;
-      outline-offset: -1px;
-
-      &:first-child {
-        grid-area: span 2 / span 2;
-
-        &:hover {
-          scale: unset;
-        }
+    #scope {
+      flex: 0.5;
+      display: grid;
+      grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+  
+      & > div {
+        outline: 1px solid;
+        outline-offset: -1px;      
+        animation:
+          calc(min((sibling-index() - 1), 1) * 12.5ms) calc((sibling-index() - 1) * 12.5ms) opacity backwards;
       }
-
-      &:hover {
-        scale: 1.25;
+    }
+  
+    #recent-colors {
+      flex: 0.5;
+      display: grid;
+      grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+  
+      div {
+        outline: 1px solid;
+        outline-offset: -1px;
+  
+        &:first-child {
+          grid-area: span 2 / span 2;
+  
+          &:hover {
+            scale: unset;
+          }
+        }
+  
+        &:hover {
+          scale: 1.25;
+        }
       }
     }
   }
 }
 
 .splitter {
-  width: 8px;
-  cursor: col-resize;
+  &.vertical {
+    width: 8px;
+  }
+
+  &.horizontal {
+    height: 8px;
+  }
+
+  &.xy {
+    cursor: move;
+  }
+
+  &.x {
+    cursor: col-resize;
+  }
 
   &:active {
     cursor: grabbing;
