@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import handleGlowEffect from '../../scripts/handleGlowEffect'
+import handleGlowEffect from '../../scripts/handleGlowEffect';
 import Image from 'next/image';
-import minimizeIcon from '../../../public/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
-import questionMarkIcon from '../../../public/question_mark_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
+import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
+import questionMarkIcon from '../../../public/icons/question_mark_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
 
 export default function Intro() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -125,11 +125,11 @@ export default function Intro() {
       onClose={() => document.getElementById('Page')?.classList.remove('blur')}
       onClick={isClosedBy ? undefined : handleClosedby}
       closedby="any">
-        <hgroup onMouseMove={handleGlowEffect} className="glowEffect">
+        <hgroup onMouseMove={handleGlowEffect} className="glow-effect -green">
           <h1>Path color picker</h1>
           <p><span>Extract colors by drawing any path across an image with your cursor.</span></p>
         </hgroup>
-        <section onMouseMove={handleGlowEffect} className="glowEffect">
+        <section onMouseMove={handleGlowEffect} className="glow-effect -blue">
           <h2>Supports:</h2>
           <ul>
             <li><span>+</span> RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ D50, LCH, LAB</li>

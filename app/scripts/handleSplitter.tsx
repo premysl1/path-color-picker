@@ -1,42 +1,3 @@
-import React from "react";
-
-export function handleSplitterDown(
-splitter: React.RefObject<HTMLElement | null>,
-event: React.PointerEvent) {
-  if (!splitter.current) {
-    return false;
-  }
-
-  splitter.current.setPointerCapture(event.pointerId);
-  return true;
-}
-
-export interface containerInfo {
-  isVertical: boolean,
-	offset: number,
-	length: number
-}
-
-export function handleSplitterMove(
-panel1: React.RefObject<HTMLElement | null>,
-splitter: React.RefObject<HTMLElement | null>,
-containerInfo: React.RefObject<containerInfo | null>,
-panel2: React.RefObject<HTMLElement | null>,
-event: React.PointerEvent) {
-  if (!(panel1.current
-  && splitter.current?.hasPointerCapture(event.pointerId)
-  && containerInfo.current
-  && panel2.current)) {
-    return;
-  }
-
-  const coordinate = containerInfo.current.isVertical ? event.clientX : event.clientY;
-  const {offset, length} = containerInfo.current;
-  const panel1Grow = (coordinate - offset) / length;
-
-  panel1.current.style.flexGrow = String(Math.max(0, Math.min(1, panel1Grow)));
-  panel2.current.style.flexGrow = String(Math.max(0, Math.min(1, 1 - panel1Grow)));
-}
 
 export interface dragStart {
   pointerId: number,
@@ -52,12 +13,13 @@ leftPanel: React.RefObject<HTMLElement | null>,
 splitter: React.RefObject<HTMLDivElement | null>,
 topRightPanel: React.RefObject<HTMLElement | null>,
 event: React.PointerEvent) {
-  if (!(handleSplitterDown(splitter, event)
+  if (!(splitter.current
   && leftPanel.current
   && topRightPanel.current)) {
     return;
   }
 
+  splitter.current.setPointerCapture(event.pointerId);
   dragStart.current = {
     pointerId: event.pointerId,
     x: event.clientX,
@@ -97,7 +59,7 @@ event: React.PointerEvent) {
   const rightPanelGrow = 1 - leftPanelGrow;
   const topRightPanelGrow = (start.topRightPanelHeight + event.clientY - start.y) / lengths.topRight;
   const bottomRightPanelGrow = 1 - topRightPanelGrow;
-  console.log(leftPanelGrow, rightPanelGrow)
+
   leftPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, leftPanelGrow)));
   rightPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, rightPanelGrow)));
   topRightPanel.current.style.flexGrow = String(Math.max(0, Math.min(1, topRightPanelGrow)));

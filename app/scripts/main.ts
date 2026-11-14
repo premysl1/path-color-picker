@@ -8,8 +8,8 @@ const recentClrs = document.getElementById(`recent-clrs`)!;
 
 // block viewports contextmenus
 
-[imageViewer, scope, recentClrs].forEach(viewport =>
-  viewport.addEventListener(`contextmenu`, e => e.preventDefault()));
+//[imageViewer, scope, recentClrs].forEach(viewport =>
+//  viewport.addEventListener(`contextmenu`, e => e.preventDefault()));
 
 // canvas set up
 
@@ -734,3 +734,7 @@ loadExampleImg.addEventListener(`click`, () => {
   manageCanvas(`example-photo-DVD-disc.avif`);
   isExampleImgLoaded = true;
 });
+
+// unsupport features
+// clear canvas
+// 

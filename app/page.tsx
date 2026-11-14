@@ -2,7 +2,7 @@
 import ImageInput from './components/navigation/ImageInput';
 import Controls from './components/navigation/Controls';
 import Intro from './components/navigation/Intro';
-import Screen from './components/Screen/Screen';
+import Viewports from './components/Viewports';
 
 export default function Page() {
   return (
@@ -22,7 +22,7 @@ export default function Page() {
           </li>
         </menu>
       </nav>
-      <Screen/>
+      <Viewports/>
     </main>
   );
 }

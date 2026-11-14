@@ -36,16 +36,13 @@ html {
   }
 }
 
-/**:focus {
-  outline: none;
-}*/
-
 *:focus {
   outline: 1px solid cyan;
   outline-offset: -1px;
 }
 
 nav {
+  overflow-x: scroll;
   background: #0a0a0a;
 
   > menu {
@@ -53,10 +50,10 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 16px;
 
     :has(#image-input)>button {
+      min-width: max-content;
       padding: 0.5ch;
       padding-right: 0.9ch;
       display: flex;
@@ -84,7 +81,6 @@ nav {
   #Controls {
     padding: 0.5ch;
     display: flex;
-    flex-wrap: wrap;
     gap: 16px;
     background: #0f0f0f;
 
@@ -128,15 +124,10 @@ nav {
       }
     }
   }
-
-  #Screen {
-    margin: 8px;
-    display: flex;
-  }
 }
 
 header {
-  dialog {
+  > dialog {
     margin: 0;
     position: absolute;
     inset: 0;
@@ -144,15 +135,7 @@ header {
     background: black;
     color: white;
 
-    hgroup {
-      z-index: 0;
-      height: 14em;
-      margin-bottom: 20px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-
+    > hgroup {
       &::before {
         content: '';
         z-index: -1;
@@ -168,30 +151,30 @@ header {
         animation: slide 8s ease-in infinite;
       }
 
-      h1 {
+      z-index: 0;
+      height: 14em;
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      > h1 {
         font-size: 3em;
         margin-bottom: 10px;
       }
 
-      span {
+      > p > span {
         background: #00000047;
         padding: 4px 6px;
       }
 
-      * {
+      > * {
         text-align: center;
       }
     }
 
-    section {
-      flex-grow: 1;
-      z-index: 0;
-      height: 14em;
-      padding: 32px;
-      position: relative;
-      outline: 1px solid cyan;
-      outline-offset: -1px;
-
+    > section {
       &::before {
         content: '';
         z-index: -1;
@@ -202,25 +185,32 @@ header {
             #0ff7);
       }
 
-      h2 {
+      flex-grow: 1;
+      z-index: 0;
+      padding: 32px;
+      position: relative;
+      outline: 1px solid cyan;
+      outline-offset: -1px;
+
+      > h2 {
         font-size: large;
         margin-bottom: 16px;
       }
 
-      ul {
+      > ul {
         margin-bottom: 16px;
       }
 
-      i {
+      > i {
         display: block;
       }
 
-      span {
+      > span {
         font-weight: bolder;
       }
     }
 
-    #minimizeButton {
+    > #minimizeButton {
       width: 4ch;
       height: 3ch;
       position: absolute;
@@ -283,17 +273,25 @@ header {
   initial-value: transparent;
 }
 
-.glowEffect {
+.glow-effect {
   --x: 50%;
   --y: 50%;
   --glow-color: transparent;
   background-image: radial-gradient(circle 100px at var(--x) var(--y),
-      var(--glow-color),
-      transparent);
+    var(--glow-color),
+    transparent);
   transition: --glow-color 500ms;
-
-  &:hover {
-    --glow-color: rgb(0 255 150 / 40%);
+  
+  &.-green {
+    &:hover {
+      --glow-color: rgb(0 255 150 / 40%);
+    }
+  }
+  
+  &.-blue {
+    &:hover {
+      --glow-color: rgb(0 150 255 / 40%);
+    }    
   }
 }
 
@@ -301,27 +299,26 @@ header {
   filter: blur(1px) grayscale(80%);
 }
 
-#viewports {
-  flex: 0.75;
+#Viewports {
+  margin: 20px;
   display: flex;
-  overflow: hidden;
 
   > div:first-child {
-    flex: 0.666;
+    flex: 0.6;
 
     #image-viewer {
       width: 100%;
       height: 100%;
-      outline: 1px solid;
-      outline-offset: -1px;
+      outline: 2px solid rgb(0 140 255);
+      outline-offset: -2px;
       background:
-        repeating-conic-gradient(var(--image-viewer-bg-clr, #0f003c) 0 25%,
+        repeating-conic-gradient(var(--image-viewer-bg-clr, rgba(0, 140, 255, 0.4)) 0 25%,
         var(--image-viewer-bg-clr-two, #000) 0 50%) 0 / 20px 20px;
     }
   }
 
   > div:nth-child(3) {
-    flex: 0.333;
+    flex: 0.4;
     display: flex;
     flex-direction: column;
 
@@ -329,34 +326,51 @@ header {
       flex: 0.5;
       display: grid;
       grid-template: repeat(9, 1fr) / repeat(9, 1fr);
-  
-      & > div {
-        outline: 1px solid;
-        outline-offset: -1px;      
-        animation:
-          calc(min((sibling-index() - 1), 1) * 12.5ms) calc((sibling-index() - 1) * 12.5ms) opacity backwards;
-      }
     }
-  
-    #recent-colors {
-      flex: 0.5;
-      display: grid;
-      grid-template: repeat(5, 1fr) / repeat(5, 1fr);
-  
-      div {
-        outline: 1px solid;
-        outline-offset: -1px;
-  
-        &:first-child {
-          grid-area: span 2 / span 2;
-  
-          &:hover {
-            scale: unset;
+
+    #clipboard {
+      flex: 0.6;
+      padding: 8px;
+      background: rgb(32, 32, 32);
+      overflow-y: auto;
+      scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        &:nth-child(5n) {
+          background: linear-gradient(to right,
+            oklch(27.116% 0.18794 264.073),
+            oklch(45.203% 0.3133 264.073));
+        }
+
+        &:hover {
+          background: white;
+          color: black;
+
+          div {
+            border: none;
           }
         }
-  
-        &:hover {
-          scale: 1.25;
+
+        &:last-child div {
+          border-bottom: 1px dotted white;
+          padding: 0;
+        }
+
+        code {
+          padding: 2px 0;
+          font-size: large;
+        }
+
+        div {
+          width: var(--row);
+          height: var(--row);
+          border: 1px dotted white;
+          border-bottom: none;
+          padding-bottom: 1px;
         }
       }
     }
@@ -364,73 +378,17 @@ header {
 }
 
 .splitter {
-  &.vertical {
-    width: 8px;
+  cursor: move;
+
+  &.-vertical {
+    width: 10px;
   }
 
-  &.horizontal {
-    height: 8px;
-  }
-
-  &.xy {
-    cursor: move;
-  }
-
-  &.x {
-    cursor: col-resize;
+  &.-horizontal {
+    height: 10px;
   }
 
   &:active {
     cursor: grabbing;
-  }
-}
-
-#clipboard {
-  flex: 0.25;
-  padding: 4px;
-  outline: 1px solid;
-  outline-offset: -1px;
-  overflow-y: auto;
-  scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
-
-  li {
-    height: var(--row);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    --row: calc(1rem + 4px);
-    
-    &:nth-child(5n) {
-      background: linear-gradient(to right,
-          oklch(27.116% 0.18794 264.073),
-          oklch(45.203% 0.3133 264.073));
-    }
-
-    &:hover {
-      background: white;
-      color: black;
-
-      div {
-        border: none;
-      }
-    }
-
-    &:last-child div {
-      border-bottom: 1px dotted white;
-      padding: 0;
-    }
-
-    code {
-      padding: 2px 0;
-      font-size: large;
-    }
-
-    div {
-      width: var(--row);
-      height: var(--row);
-      border: 1px dotted white;
-      border-bottom: none;
-      padding-bottom: 1px;
-    }
   }
 }
