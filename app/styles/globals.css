@@ -3,36 +3,14 @@ html {
   scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
 
   body {
-    /*&::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      --line: #ffffff17;
-      background-image:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 24px 24px;
-      mask-image: linear-gradient(black, transparent);
-    }*/
-
     height: inherit;
     background: black;
     color: white;
-    /*display: flex;
-    flex-direction: column;
 
-    a {
-      color: oklch(1 0.4 190);
-    
-      &:enabled {
-        color: oklch(1 0.4 140);
-      }
-    
-      &:visited {
-        color: oklch(0.5 0.4 325);
-      }
-    }*/
+    select {
+      background: black;
+      color: white;
+    }
   }
 }
 
@@ -76,7 +54,7 @@ nav {
 #Page {
   height: inherit;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 
   #Controls {
     padding: 0.5ch;
@@ -199,14 +177,19 @@ header {
 
       > ul {
         margin-bottom: 16px;
+
+        > i {
+          display: block;
+        }
       }
 
-      > i {
-        display: block;
+      > ul > li > span,
+      > i > span {
+        font-weight: 800;
       }
 
-      > span {
-        font-weight: bolder;
+      > i > span {
+        font-style: normal;
       }
     }
 
@@ -231,15 +214,17 @@ header {
   }
 
   #maximizeButton {
-    width: 3ch;
-    height: 3ch;
+    width: 3.5ch;
+    height: 3.5ch;
+    padding: 2.5px;
+    display: grid;
+    place-items: center;
     position: absolute;
     bottom: 1ch;
     right: 1ch;
     border-radius: 50%;
     background: #0f0f0f;
-    color: white;
-    outline: 1px solid white;
+    outline: 2px solid greenyellow;
 
     &:hover {
       background: rgb(45, 45, 45);
@@ -252,7 +237,6 @@ header {
     > img {
       width: 60%;
       height: 60%;
-      translate: 6px -1px;
     }
   }
 }
@@ -295,13 +279,14 @@ header {
   }
 }
 
-.blur {
+.fade {
   filter: blur(1px) grayscale(80%);
 }
 
 #Viewports {
   margin: 20px;
   display: flex;
+  overflow: auto;
 
   > div:first-child {
     flex: 0.6;
@@ -335,7 +320,42 @@ header {
       overflow-y: auto;
       scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
 
-      li {
+      > div {
+        padding: 0 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+
+        > :has(> #convert-color-format) {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        > div:nth-of-type(2) {
+          display: flex;
+
+          > button {
+            background: transparent;
+
+            > img {
+              max-width: 35px;
+              max-height: 35px;
+            }
+          }
+
+          > button:first-child > img {
+            padding: 6px;
+          }
+
+          > button:nth-child(2) > img {
+            padding: 4px;
+          }
+        }
+      }
+
+      > #clipboard-content > li {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -380,11 +400,11 @@ header {
 .splitter {
   cursor: move;
 
-  &.-vertical {
+  &.vertical {
     width: 10px;
   }
 
-  &.-horizontal {
+  &.horizontal {
     height: 10px;
   }
 

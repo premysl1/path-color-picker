@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import handleGlowEffect from '../../scripts/handleGlowEffect';
 import Image from 'next/image';
 import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
-import questionMarkIcon from '../../../public/icons/question_mark_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
+import questionMarkIcon from '../../../public/icons/question-mark.svg';
 
 export default function Intro() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -122,7 +122,7 @@ export default function Intro() {
     <>
       <dialog
       ref={dialog}
-      onClose={() => document.getElementById('Page')?.classList.remove('blur')}
+      onClose={() => document.getElementById('Page')?.classList.remove('fade')}
       onClick={isClosedBy ? undefined : handleClosedby}
       closedby="any">
         <hgroup onMouseMove={handleGlowEffect} className="glow-effect -green">

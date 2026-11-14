@@ -2,12 +2,11 @@
 
 import { useEffect } from 'react';
 import {useRef} from 'react';
-import {handleXySplitterDown,
-  handleXySplittersMove} from '../scripts/handleSplitter';
-import type {dragStart,
-  panelsLengths} from '../scripts/handleSplitter';
+import {handleXySplitterDown, handleXySplittersMove} from '../scripts/handleSplitter';
+import type {dragStart, panelsLengths} from '../scripts/handleSplitter';
 import handleGlowEffect from '../scripts/handleGlowEffect';
 import Image from 'next/image';
+import copy from '../../public/icons/copy.svg';
 import downloadText from '../../public/icons/txt.svg';
 
 export default function Viewports() {
@@ -24,25 +23,24 @@ export default function Viewports() {
   const imageViewer = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const applyHeight = new ResizeObserver(() => {
-      const navigation = document.getElementById(`navigation`);
-      if (!(navigation
-      && Viewports.current
-      && clipboard.current)) {
-        return;
-      }
+    //const applyHeight = new ResizeObserver(() => {
+    //  const navigation = document.getElementById(`navigation`);
+    //  if (!(navigation
+    //  && Viewports.current)) {
+    //    return;
+    //  }
 
-      const ViewportsMargin = Number(window
-        .getComputedStyle(Viewports.current)
-        .margin
-        .replaceAll(/[^\d.]/g, ``));
+    //  const ViewportsMargin = Number(window
+    //    .getComputedStyle(Viewports.current)
+    //    .margin
+    //    .replace(`px`, ``));
 
-      Viewports.current.style.height = String(
-          innerHeight
-        - navigation.getBoundingClientRect().height
-        - ViewportsMargin * 2)
-        + `px`;
-    });
+    //  Viewports.current.style.height = String(
+    //      innerHeight
+    //    - navigation.offsetHeight
+    //    - ViewportsMargin * 2)
+    //    + `px`;
+    //});
 
     const viewportsResize = new ResizeObserver(() => {
       if (!(Viewports.current
@@ -64,7 +62,7 @@ export default function Viewports() {
         - utilitiesViewportsSplitter.current.offsetHeight;
     });
  
-    applyHeight.observe(document.body);
+    //applyHeight.observe(document.body);
 
     if (Viewports.current) {
       viewportsResize.observe(Viewports.current);
@@ -74,7 +72,7 @@ export default function Viewports() {
     }
 
     return () => {
-      applyHeight.disconnect();
+      //applyHeight.disconnect();
       viewportsResize.disconnect();
       utilitiesViewportsResize.disconnect();
     };
@@ -103,7 +101,7 @@ export default function Viewports() {
       scope,
       clipboard,
       event)}
-      className="splitter -vertical"></div>
+      className="splitter vertical"></div>
       <div ref={utilitiesViewports}>
         <div ref={scope}
         onMouseMove={handleGlowEffect}
@@ -127,10 +125,36 @@ export default function Viewports() {
         scope,
         clipboard,
         event)}
-        className="splitter -horizontal"></div>
+        className="splitter horizontal"></div>
         <div ref={clipboard} id="clipboard">
-          <Image src={downloadText} alt="Download as text file." title="Download as text file." role="img"/>
-          <ul></ul>
+          <div>
+            <p title="No. of sampled colors.">0</p>
+            <div title="Convert color format.">
+              <label htmlFor="convert-color-format">T: </label>
+              <select id="convert-color-format">
+                <option value="RGB">RGB</option>
+                <option value="sRGB">sRGB</option>
+                <option value="HEX">HEX</option>
+                <option value="OKLCH">OKLCH</option>
+                <option value="OKLAB">OKLAB</option>
+                <option value="HSL">HSL</option>
+                <option value="XYZ D65">XYZ D65</option>
+                <option value="XYZ D50">XYZ D50</option>
+                <option value="HWB">HWB</option>
+                <option value="LCH">LCH</option>
+                <option value="LAB">LAB</option>
+              </select>
+            </div>
+            <div>
+              <button>
+                <Image src={copy} alt="Copy clipboard content." title="Copy clipboard content." role="img"/>
+              </button>
+              <button>
+                <Image src={downloadText} alt="Download as text file." title="Download as text file." role="img"/>
+              </button>
+            </div>
+          </div>
+          <ul id="clipboard-content"></ul>
         </div>
       </div>
     </div>

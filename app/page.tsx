@@ -6,8 +6,8 @@ import Viewports from './components/Viewports';
 
 export default function Page() {
   return (
-    <main id="Page" className="blur">
-      <nav id="navigation">
+    <main id="Page" className="fade">
+      <nav>
         <menu>
           <li>
             <ImageInput/>
