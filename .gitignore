@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Vite cache
 /.vite/
+.worktrees/next-16.4.6-security/
