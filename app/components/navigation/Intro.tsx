@@ -12,6 +12,28 @@ export default function Intro() {
   const maximizeButton = useRef(null);
   let duration = 250;
 
+  function getMinimizedDialog(dialog: HTMLDialogElement, maximizeButton: HTMLButtonElement) {
+    const dialogRect = dialog.getBoundingClientRect();
+    const buttonRect = maximizeButton.getBoundingClientRect();
+
+    const dialogCenterX = dialogRect.left + dialogRect.width / 2;
+    const dialogCenterY = dialogRect.top + dialogRect.height / 2;
+    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+    const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+    const dx = buttonCenterX - dialogCenterX;
+    const dy = buttonCenterY - dialogCenterY;
+    const scale = Math.min(
+      buttonRect.width / dialogRect.width,
+      buttonRect.height / dialogRect.height
+    );
+
+    return {
+      transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
+      opacity: 0
+    };
+  }
+
   async function handleMinimize() {
     if (!maximizeButton.current) return;
 
@@ -125,11 +147,11 @@ export default function Intro() {
       onClose={() => document.getElementById('Page')?.classList.remove('fade')}
       onClick={isClosedBy ? undefined : handleClosedby}
       closedby="any">
-        <hgroup onMouseMove={handleGlowEffect} className="glow-effect -green">
+        <hgroup onMouseMove={handleGlowEffect} className="glow-effect green">
           <h1>Path color picker</h1>
           <p><span>Extract colors by drawing any path across an image with your cursor.</span></p>
         </hgroup>
-        <section onMouseMove={handleGlowEffect} className="glow-effect -blue">
+        <section onMouseMove={handleGlowEffect} className="glow-effect blue">
           <h2>Supports:</h2>
           <ul>
             <li><span>+</span> RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ D50, LCH, LAB</li>
@@ -148,26 +170,4 @@ export default function Intro() {
       </button>
     </>
   );
-}
-
-function getMinimizedDialog(dialog: HTMLDialogElement, maximizeButton: HTMLButtonElement) {
-  const dialogRect = dialog.getBoundingClientRect();
-  const buttonRect = maximizeButton.getBoundingClientRect();
-
-  const dialogCenterX = dialogRect.left + dialogRect.width / 2;
-  const dialogCenterY = dialogRect.top + dialogRect.height / 2;
-  const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-  const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-
-  const dx = buttonCenterX - dialogCenterX;
-  const dy = buttonCenterY - dialogCenterY;
-  const scale = Math.min(
-    buttonRect.width / dialogRect.width,
-    buttonRect.height / dialogRect.height
-  );
-
-  return {
-    transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
-    opacity: 0
-  };
 }

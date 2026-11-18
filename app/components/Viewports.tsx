@@ -1,48 +1,165 @@
 'use client';
 
-import { useEffect } from 'react';
-import {useRef} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {handleXySplitterDown, handleXySplittersMove} from '../scripts/handleSplitter';
 import type {dragStart, panelsLengths} from '../scripts/handleSplitter';
 import handleGlowEffect from '../scripts/handleGlowEffect';
 import Image from 'next/image';
-import copy from '../../public/icons/copy.svg';
-import downloadText from '../../public/icons/txt.svg';
+import copyIcon from '../../public/icons/copy.svg';
+import downloadTextIcon from '../../public/icons/txt.svg';
+import deleteAllIcon from '../../public/icons/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
+import * as colorConversion from '../scripts/color-conversion'; 
 
-export default function Viewports() {
+type Props = {
+	canvas: React.RefObject<HTMLCanvasElement | null>
+  frequencyInput: React.RefObject<HTMLInputElement | null>
+	selectFormat: React.RefObject<HTMLSelectElement | null>
+}
+
+type samples = {
+  rgba: {
+    r: number,
+    g: number,
+    b: number,
+    alpha: number
+  },
+  format: string,
+  id: string
+}[]
+
+const testSamplesColor = () => {
+  return {
+    rgba: {
+      r: Math.random() * 255,
+      g: Math.random() * 255,
+      b: Math.random() * 255,
+      alpha: Math.random()
+    },
+    format: `sRGB`,
+    id: crypto.randomUUID()
+  };
+};
+
+const testSamples = Array.from({ length: 32 }, testSamplesColor);
+
+export default function Viewports({canvas, frequencyInput, selectFormat}: Props) {
   const Viewports = useRef<HTMLDivElement>(null);
-  const imageViewport = useRef<HTMLDivElement>(null);
+  const canvasContainer = useRef<HTMLDivElement>(null);
   const ViewportsSplitter = useRef<HTMLDivElement>(null);
-  const utilitiesViewports = useRef<HTMLDivElement>(null);
+  const secondaryViewports = useRef<HTMLDivElement>(null);
   const dragStart = useRef<dragStart>(null);
   const ViewportsLengths = useRef<panelsLengths>({left: null, topRight: null});
   const scope = useRef<HTMLDivElement>(null);
-  const utilitiesViewportsSplitter = useRef<HTMLDivElement>(null);
+  const horizontalViewportsSplitter = useRef<HTMLDivElement>(null);
   const clipboard = useRef<HTMLDivElement>(null);
 
-  const imageViewer = useRef<HTMLCanvasElement>(null);
+  const [samples, setSamples] = useState<samples>(testSamples);
+  let formatedTextSamples = useRef(``);
+
+  function convert(samples: samples) {
+    const converted = [];
+    const textSamples = [];
+
+    for (const {rgba, format, id} of samples) {
+      let code = ``;
+
+      switch (format) {
+        case `RGB`:
+          code = `rgb(${rgba.r} ${rgba.g} ${rgba.b}${rgba.alpha < 1 ? ` / ${rgba.alpha.toFixed(3)}` : ``})`;
+          break;
+        case `sRGB`:
+          code = `color(srgb ${(rgba.r / 255).toFixed(3)} ${(rgba.g / 255).toFixed(3)} ${(rgba.b / 255).toFixed(3)}${rgba.alpha < 1 ? ` / ${rgba.alpha.toFixed(3)}` : ``})`;
+          break;
+        case `HEX`:
+          code = colorConversion.rgbaToHEXAText(rgba);
+          break;
+        case `OKLCH`:
+          code = colorConversion.toOkLChText(rgba);
+          break;
+        case `OKLAB`:
+          code = colorConversion.toOkLabText(rgba);
+          break;
+        case `HSL`:
+          code = colorConversion.toHSLAText(rgba);
+          break;
+        case `XYZ D50`:
+          code = colorConversion.rgbaToXYZD50Text(rgba);
+          break;
+        case `XYZ D65`:
+          code = colorConversion.rgbaToXYZD65Text(rgba);
+          break;
+        case `LAB`:
+          code = colorConversion.rgbaToLabText(rgba);
+          break;
+        case `LCH`:
+          code = colorConversion.toLCHText(rgba);
+          break;
+        case `HWB`:
+          code = colorConversion.rgbaToHWBAText(rgba);
+          break;
+      }
+
+      converted.unshift({code, id});
+      textSamples.push(code);
+    }
+    
+    formatedTextSamples.current = textSamples.join(`\n`);
+    return converted;
+  }
+
+  const toDelete = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  function handleDelete(e: React.MouseEvent, id: string) {
+    const timeout = toDelete.current[id];
+
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+      delete toDelete.current[id];
+
+      e.currentTarget.classList.remove(`toDelete`);
+      return;
+    }
+
+    e.currentTarget.classList.add(`toDelete`);
+
+    toDelete.current[id] = setTimeout(() => {
+      setSamples(prev => prev.filter(sample => sample.id !== id));
+      delete toDelete.current[id];
+    }, 2000);
+  }
+
+  function copy() {
+    async function writeClipboardText(text: string) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        }
+      }
+    }
+
+    writeClipboardText(formatedTextSamples.current);
+  }
+
+  function download() {
+    const blob = new Blob([formatedTextSamples.current],
+      { type: `text/plain` });
+    const a = document.createElement(`a`);
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    
+    const usedFormats = new Set();
+    samples.forEach(sample => usedFormats.add(sample.format));
+
+    a.download = samples.length
+               + `-sampled-colors-${[...usedFormats].join(`-`)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   useEffect(() => {
-    //const applyHeight = new ResizeObserver(() => {
-    //  const navigation = document.getElementById(`navigation`);
-    //  if (!(navigation
-    //  && Viewports.current)) {
-    //    return;
-    //  }
-
-    //  const ViewportsMargin = Number(window
-    //    .getComputedStyle(Viewports.current)
-    //    .margin
-    //    .replace(`px`, ``));
-
-    //  Viewports.current.style.height = String(
-    //      innerHeight
-    //    - navigation.offsetHeight
-    //    - ViewportsMargin * 2)
-    //    + `px`;
-    //});
-
-    const viewportsResize = new ResizeObserver(() => {
+    const ViewportsResize = new ResizeObserver(() => {
       if (!(Viewports.current
       && ViewportsSplitter.current)) {
         return;
@@ -52,109 +169,100 @@ export default function Viewports() {
         - ViewportsSplitter.current.offsetWidth;
     });
 
-    const utilitiesViewportsResize = new ResizeObserver(() => {
-      if (!(utilitiesViewports.current
-      && utilitiesViewportsSplitter.current)) {
+    const secondaryViewportsResize = new ResizeObserver(() => {
+      if (!(secondaryViewports.current
+      && horizontalViewportsSplitter.current)) {
         return;
       }
 
-      ViewportsLengths.current.topRight = utilitiesViewports.current.clientHeight
-        - utilitiesViewportsSplitter.current.offsetHeight;
+      ViewportsLengths.current.topRight = secondaryViewports.current.clientHeight
+        - horizontalViewportsSplitter.current.offsetHeight;
     });
- 
-    //applyHeight.observe(document.body);
-
+    
     if (Viewports.current) {
-      viewportsResize.observe(Viewports.current);
+      ViewportsResize.observe(Viewports.current);
     }
-    if (utilitiesViewports.current) {
-      utilitiesViewportsResize.observe(utilitiesViewports.current);
+    if (secondaryViewports.current) {
+      secondaryViewportsResize.observe(secondaryViewports.current);
     }
 
     return () => {
-      //applyHeight.disconnect();
-      viewportsResize.disconnect();
-      utilitiesViewportsResize.disconnect();
+      ViewportsResize.disconnect();
+      secondaryViewportsResize.disconnect();
+      Object.values(toDelete.current).forEach(clearTimeout);
     };
   }, []);
 
   return (
     <div ref={Viewports}
-    onContextMenu={event => event.preventDefault()}
+    onContextMenu={e => e.preventDefault()}
     id="Viewports">
-      <div ref={imageViewport} onMouseMove={handleGlowEffect}>
-        <canvas ref={imageViewer} id="image-viewer"></canvas>
+      <div ref={canvasContainer} onMouseMove={handleGlowEffect}>
+        <canvas ref={canvas}></canvas>
       </div>
       <div ref={ViewportsSplitter}
-      onPointerDown={event => handleXySplitterDown(
+      onPointerDown={e => handleXySplitterDown(
       dragStart,
-      imageViewport,
+      canvasContainer,
       ViewportsSplitter,
       scope,
-      event)}
-      onPointerMove={event => handleXySplittersMove(
+      e)}
+      onPointerMove={e => handleXySplittersMove(
       dragStart,
       ViewportsLengths.current,
       ViewportsSplitter,
-      imageViewport,
-      utilitiesViewports,
+      canvasContainer,
+      secondaryViewports,
       scope,
       clipboard,
-      event)}
+      e)}
       className="splitter vertical"></div>
-      <div ref={utilitiesViewports}>
+      <div ref={secondaryViewports}>
         <div ref={scope}
         onMouseMove={handleGlowEffect}
         id="scope"
-        className="glow-effect -blue">
+        className="glow-effect blue">
           {Array.from({ length: 81 }, (_, i) => <div key={i}></div>)}
         </div>
-        <div ref={utilitiesViewportsSplitter}
-        onPointerDown={event => handleXySplitterDown(
+        <div ref={horizontalViewportsSplitter}
+        onPointerDown={e => handleXySplitterDown(
         dragStart,
-        imageViewport,
-        utilitiesViewportsSplitter,
+        canvasContainer,
+        horizontalViewportsSplitter,
         scope,
-        event)}
-        onPointerMove={event => handleXySplittersMove(
+        e)}
+        onPointerMove={e => handleXySplittersMove(
         dragStart,
         ViewportsLengths.current,
-        utilitiesViewportsSplitter,
-        imageViewport,
-        utilitiesViewports,
+        horizontalViewportsSplitter,
+        canvasContainer,
+        secondaryViewports,
         scope,
         clipboard,
-        event)}
+        e)}
         className="splitter horizontal"></div>
         <div ref={clipboard} id="clipboard">
           <div>
-            <p title="No. of sampled colors.">0</p>
-            <div title="Convert color format.">
-              <label htmlFor="convert-color-format">T: </label>
-              <select id="convert-color-format">
-                <option value="RGB">RGB</option>
-                <option value="sRGB">sRGB</option>
-                <option value="HEX">HEX</option>
-                <option value="OKLCH">OKLCH</option>
-                <option value="OKLAB">OKLAB</option>
-                <option value="HSL">HSL</option>
-                <option value="XYZ D65">XYZ D65</option>
-                <option value="XYZ D50">XYZ D50</option>
-                <option value="HWB">HWB</option>
-                <option value="LCH">LCH</option>
-                <option value="LAB">LAB</option>
-              </select>
-            </div>
+            <p title="No. of sampled colors.">{samples.length}</p>
             <div>
-              <button>
-                <Image src={copy} alt="Copy clipboard content." title="Copy clipboard content." role="img"/>
+              <button onClick={samples.length ? copy : undefined}>
+                <Image src={copyIcon} alt="Copy clipboard content." title="Copy clipboard content." role="img"/>
               </button>
-              <button>
-                <Image src={downloadText} alt="Download as text file." title="Download as text file." role="img"/>
+              <button onClick={samples.length ? download : undefined}>
+                <Image src={downloadTextIcon} alt="Download as text file." title="Download as text file." role="img"/>
+              </button>
+              <button onClick={() => setSamples([])}>
+                <Image src={deleteAllIcon} alt="Delete all samples." title="Delete all samples." role="img"/>
               </button>
             </div>
           </div>
-          <ul id="clipboard-content"></ul>
+          <ul id="clipboard-content">
+            {convert(samples).map(({code, id}) =>
+              <li onClick={e => handleDelete(e, id)} key={id} id={id} tabIndex={1}>
+                <div style={{background: code}}></div><code>{code}</code>
+              </li>
+            )}
+          </ul>
         </div>
       </div>
     </div>

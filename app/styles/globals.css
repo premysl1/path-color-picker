@@ -15,8 +15,8 @@ html {
 }
 
 *:focus {
-  outline: 1px solid cyan;
-  outline-offset: -1px;
+  outline: 2px solid cyan;
+  outline-offset: -2px;
 }
 
 nav {
@@ -68,25 +68,23 @@ nav {
       gap: 8px;
 
       #sampling-frequency {
-        height: 100%;
         width: 5ch;
         padding-left: 0.5ch;
       }
     }
 
-    :has(#color-format) {
+    :has(#select-format) {
       display: flex;
       align-items: center;
       gap: 8px;
 
-      #color-format {
-        height: 100%;
+      #select-format {
         width: 9ch;
         padding-left: 0.2ch;
       }
     }
 
-    :has(#image-viewer-background-color) {
+    :has(#canvas-background-color) {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -167,8 +165,8 @@ header {
       z-index: 0;
       padding: 32px;
       position: relative;
-      outline: 1px solid cyan;
-      outline-offset: -1px;
+      outline: 2px solid cyan;
+      outline-offset: -2px;
 
       > h2 {
         font-size: large;
@@ -213,17 +211,17 @@ header {
     }
   }
 
-  #maximizeButton {
+  > #maximizeButton {
     width: 3.5ch;
     height: 3.5ch;
     padding: 2.5px;
     display: grid;
     place-items: center;
     position: absolute;
-    bottom: 1ch;
-    right: 1ch;
+    bottom: 1.5ch;
+    right: 1.5ch;
     border-radius: 50%;
-    background: #0f0f0f;
+    background: black;
     outline: 2px solid greenyellow;
 
     &:hover {
@@ -266,13 +264,13 @@ header {
     transparent);
   transition: --glow-color 500ms;
   
-  &.-green {
+  &.green {
     &:hover {
       --glow-color: rgb(0 255 150 / 40%);
     }
   }
   
-  &.-blue {
+  &.blue {
     &:hover {
       --glow-color: rgb(0 150 255 / 40%);
     }    
@@ -291,14 +289,15 @@ header {
   > div:first-child {
     flex: 0.6;
 
-    #image-viewer {
+    > canvas {
       width: 100%;
       height: 100%;
       outline: 2px solid rgb(0 140 255);
       outline-offset: -2px;
       background:
-        repeating-conic-gradient(var(--image-viewer-bg-clr, rgba(0, 140, 255, 0.4)) 0 25%,
-        var(--image-viewer-bg-clr-two, #000) 0 50%) 0 / 20px 20px;
+        repeating-conic-gradient(var(--background,
+      rgba(0, 140, 255, 0.4)) 0 25%,
+        var(--background-2, #000) 0 50%) 0 / 20px 20px;
     }
   }
 
@@ -315,25 +314,19 @@ header {
 
     #clipboard {
       flex: 0.6;
-      padding: 8px;
+      padding: 8px 16px;
       background: rgb(32, 32, 32);
       overflow-y: auto;
       scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
 
-      > div {
-        padding: 0 8px;
+      > div:first-child {
+        padding-bottom: 4px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 8px;
 
-        > :has(> #convert-color-format) {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        > div:nth-of-type(2) {
+        > div:first-of-type {
           display: flex;
 
           > button {
@@ -352,45 +345,33 @@ header {
           > button:nth-child(2) > img {
             padding: 4px;
           }
+
+          > button:nth-child(3) {
+            margin-left: 4px;
+          }
         }
       }
 
       > #clipboard-content > li {
+        max-height: 1lh;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 8px;
         
-        &:nth-child(5n) {
-          background: linear-gradient(to right,
-            oklch(27.116% 0.18794 264.073),
-            oklch(45.203% 0.3133 264.073));
-        }
-
         &:hover {
           background: white;
           color: black;
-
-          div {
-            border: none;
-          }
         }
 
-        &:last-child div {
-          border-bottom: 1px dotted white;
-          padding: 0;
+        > div {
+          width: 20px;
+          height: 1lh;
         }
 
-        code {
-          padding: 2px 0;
+        > code {
+          text-wrap: nowrap;
           font-size: large;
-        }
-
-        div {
-          width: var(--row);
-          height: var(--row);
-          border: 1px dotted white;
-          border-bottom: none;
-          padding-bottom: 1px;
         }
       }
     }
@@ -411,4 +392,10 @@ header {
   &:active {
     cursor: grabbing;
   }
+}
+
+.toDelete {
+  outline: none;
+  background: linear-gradient(to right, oklch(42.793% 0.25768 29.223), oklch(22.793% 0.25768 29.223)) !important;
+  color: white !important;
 }
