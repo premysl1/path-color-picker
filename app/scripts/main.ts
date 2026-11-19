@@ -64,17 +64,6 @@ let imageDataObj: ImageData;
 //  );
 //}
 
-interface Pixel {
-  r: number,
-  g: number,
-  b: number,
-  alpha: number
-}
-
-interface everyChannelIsEmpty {
-  everyChannelIsEmpty: true
-}
-
 function getPixelAt(
   imageDataObj: ImageData,
   x: number,
@@ -125,7 +114,7 @@ function render(img: HTMLImageElement) {
 //  );
 //}
 
-function getCanvasXY(e: MouseEvent) {
+function getCanvasXy(e: MouseEvent) {
   return {
     x: Math.round(e.clientX - horizontalMarginOffset),
     y: Math.round(e.clientY - canvas.getBoundingClientRect().top)
@@ -162,8 +151,6 @@ function closeSamplingPath(e: PointerEvent) {
     canvas.releasePointerCapture(e.pointerId);
   }
 }
-
-const clearCanvasBtn = document.getElementById(`clear-canvas`)!;
 
 //function calculateImgXy(x: number, y: number) {
 //  return {
@@ -455,32 +442,6 @@ function samplePx(x: number, y: number) {
 //const clrsCounter = document.getElementById(`counter`)!;
 const clipboard = document.getElementById(`clipboard`)!;
 
-// render first file image
-
-export async function renderFile(file: string) {
-  const img = new Image();
-  let objectURL: string;
-
-  await new Promise<void>(resolve => {
-    img.onload = () => {
-      render(img);
-
-      if (objectURL) {
-        URL.revokeObjectURL(objectURL);
-      }
-
-      resolve();
-    };
-
-    if (typeof file !== `string`) {
-      objectURL = URL.createObjectURL(file);
-      img.src = objectURL;
-    } else {
-      img.src = file;
-    }
-  });
-}
-
 // drag and drop
 
 //const samplingScreen = document.getElementById(`sampling-screen`);
@@ -631,8 +592,6 @@ const downloadBtn = document.getElementById(`download`)!;
   //let lastSampledY: number | null = null;
   //let accLength = 0;
 
-  //const stringifySampledColors = () => sampledColors.toReversed().join(`\n`);
-
   //function calculateImage(x: number, y: number) {
   //  return {
   //    imageX: Math.floor((x - tx.current) / scale.current),
@@ -776,7 +735,7 @@ const downloadBtn = document.getElementById(`download`)!;
   //}
 
   //function handlePointerdown(e: React.PointerEvent) {
-  //  if (canvas.current) {
+  //  if (!canvas.current) {
   //    return;
   //  }
     
@@ -806,131 +765,108 @@ const downloadBtn = document.getElementById(`download`)!;
   //  }
   //}
 
-  //function handleMovement(e: React.PointerEvent) {
-  //  if (isUserPanning) {
-  //    tx.current += e.movementX;
-  //    ty.current += e.movementY;
+  function handleMovement(e: React.PointerEvent) {
+    if (isUserPanning) {
+      tx.current += e.movementX;
+      ty.current += e.movementY;
 
-  //    draw(inputImg);
-  //  }
+      draw(inputImg);
+    }
 
-  //  // compute coordinates for paint scope and paint hover field 
+    // compute coordinates for paint scope and paint hover field 
 
-  //  const { x, y } = getCanvasXy(e);
-  //  const { imgX, imgY } = calculateImgXy(x, y);
+    const { x, y } = getCanvasXy(e);
+    const { imgX, imgY } = calculateImgXy(x, y);
 
-  //  // paint scope
+    // sample path
 
-  //  let lens = 0;
-  //  for (let dy = -4; dy <= 4; dy++) {
-  //    for (let dx = -4; dx <= 4; dx++) {
-  //      const pxX = imgX + dx;
-  //      const pxY = imgY + dy;
+    if (!isUserSamplingPath) return;
 
-  //      if (pxX >= 0 && pxX < imageDataObj.width &&
-  //        pxY >= 0 && pxY < imageDataObj.height) {
-  //        const px = getPixelAt(imgX, imgY); 
-  //        if (!(`everyChannelIsEmpty` in px)) {
-  //          const { r, g, b, alpha } = px;
-  //          scopeLenses[lens].style.backgroundColor = `rgb(${r} ${g} ${b} / ${alpha})`;
-  //        }
-  //      } else {
-  //        scopeLenses[lens].style.backgroundColor = `initial`;
-  //      }
+    const pointerEvents = e.getCoalescedEvents();
 
-  //      lens++;
-  //    }
-  //  }
+    for (const pointerEvent of pointerEvents) {
+      const px = getCanvasXYOnlyInImg(pointerEvent);
 
-  //  // sample path
+      if (`pointerIsOutsideOfImage` in px) continue;
 
-  //  if (!isUserSamplingPath) return;
+      if (lastSampledX === null || lastSampledY === null) {
+        samplePixel(x, y);
+        lastSampledX = x;
+        lastSampledY = y;
+        accLength = 0;
+        continue;
+      }
 
-  //  const pointerEvents = e.getCoalescedEvents();
+      const f = Number(samplingFrequencyInput.value);
+      if (f >= 2) {
+        let x1 = lastSampledX;
+        let y1 = lastSampledY;
+        const x2 = x;
+        const y2 = y;
 
-  //  for (const pointerEvent of pointerEvents) {
-  //    const px = getCanvasXYOnlyInImg(pointerEvent);
+        let lineLength = Math.hypot(x2 - x1, y2 - y1);
+        if (lineLength === 0) continue;
 
-  //    if (`pointerIsOutsideOfImage` in px) continue;
+        accLength += lineLength;
 
-  //    if (lastSampledX === null || lastSampledY === null) {
-  //      samplePixel(x, y);
-  //      lastSampledX = x;
-  //      lastSampledY = y;
-  //      accLength = 0;
-  //      continue;
-  //    }
+        while (accLength >= f) {
+          const needed = f - (accLength - lineLength);
+          const interpStep = Math.min(Math.max(needed / lineLength, 0), 1);
 
-  //    const f = Number(samplingFrequencyInput.value);
-  //    if (f >= 2) {
-  //      let x1 = lastSampledX;
-  //      let y1 = lastSampledY;
-  //      const x2 = x;
-  //      const y2 = y;
+          const interpX = Math.round(x1 + interpStep * (x2 - x1));
+          const interpY = Math.round(y1 + interpStep * (y2 - y1));
 
-  //      let lineLength = Math.hypot(x2 - x1, y2 - y1);
-  //      if (lineLength === 0) continue;
+          samplePixel(x, y);
 
-  //      accLength += lineLength;
+          accLength -= f;
+          lineLength = lineLength - needed;
+          x1 = interpX;
+          y1 = interpY;
 
-  //      while (accLength >= f) {
-  //        const needed = f - (accLength - lineLength);
-  //        const interpStep = Math.min(Math.max(needed / lineLength, 0), 1);
+          if (lineLength <= 0) break;
+        }
 
-  //        const interpX = Math.round(x1 + interpStep * (x2 - x1));
-  //        const interpY = Math.round(y1 + interpStep * (y2 - y1));
+        lastSampledX = x;
+        lastSampledY = y;
+      } else {
+        function getPXsFromLine(x: number, y: number, x1: number, y1: number) {
+          const pxs = [];
+          const dx = Math.abs(x1 - x);
+          const dy = Math.abs(y1 - y);
+          const sx = x < x1 ? 1 : -1;
+          const sy = y < y1 ? 1 : -1;
+          let err = dx - dy;
 
-  //        samplePixel(x, y);
+          while (true) {
+            pxs.push({ x, y });
 
-  //        accLength -= f;
-  //        lineLength = lineLength - needed;
-  //        x1 = interpX;
-  //        y1 = interpY;
+            if (x === x1 && y === y1) break;
 
-  //        if (lineLength <= 0) break;
-  //      }
+            const e2 = 2 * err;
+            if (e2 > -dy) {
+              err -= dy;
+              x += sx;
+            }
+            if (e2 < dx) {
+              err += dx;
+              y += sy;
+            }
+          }
 
-  //      lastSampledX = x;
-  //      lastSampledY = y;
-  //    } else {
-  //      function getPXsFromLine(x: number, y: number, x1: number, y1: number) {
-  //        const pxs = [];
-  //        const dx = Math.abs(x1 - x);
-  //        const dy = Math.abs(y1 - y);
-  //        const sx = x < x1 ? 1 : -1;
-  //        const sy = y < y1 ? 1 : -1;
-  //        let err = dx - dy;
+          return pxs;
+        }
 
-  //        while (true) {
-  //          pxs.push({ x, y });
+        const pxs = getPXsFromLine(lastSampledX, lastSampledY, x, y);
+        for (let i = 1; i < pxs.length; i++) {
+          const { x, y } = pxs[i];
+          samplePixel(x, y);
+        }
 
-  //          if (x === x1 && y === y1) break;
-
-  //          const e2 = 2 * err;
-  //          if (e2 > -dy) {
-  //            err -= dy;
-  //            x += sx;
-  //          }
-  //          if (e2 < dx) {
-  //            err += dx;
-  //            y += sy;
-  //          }
-  //        }
-
-  //        return pxs;
-  //      }
-
-  //      const pxs = getPXsFromLine(lastSampledX, lastSampledY, x, y);
-  //      for (let i = 1; i < pxs.length; i++) {
-  //        const { x, y } = pxs[i];
-  //        samplePixel(x, y);
-  //      }
-
-  //      lastSampledX = x;
-  //      lastSampledY = y;
-  //    }
-  //  }
-  //}
+        lastSampledX = x;
+        lastSampledY = y;
+      }
+    }
+  }
 
   //let cursorTimeout: NodeJS.Timeout;
   //function handleWheel(e: React.WheelEvent) {

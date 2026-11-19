@@ -30,7 +30,7 @@ nav {
     align-items: center;
     gap: 16px;
 
-    :has(#image-input)>button {
+    :has(#image-input) > button {
       min-width: max-content;
       padding: 0.5ch;
       padding-right: 0.9ch;

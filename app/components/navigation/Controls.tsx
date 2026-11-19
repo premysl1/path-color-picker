@@ -2,13 +2,14 @@
 
 import React, {useEffect, useRef} from 'react';
 
-type Props = {
-	canvas: React.RefObject<HTMLCanvasElement | null>
-  frequencyInput: React.RefObject<HTMLInputElement | null>
-	selectFormat: React.RefObject<HTMLSelectElement | null>
-}
-
-export default function Controls({canvas, frequencyInput, selectFormat}: Props) {
+export default function Controls(
+  {
+    canvas,
+    frequencyInput,
+    selectFormat,
+    userImage
+  }: Props
+) {
   function handleInputBackground(str: string, e: React.InputEvent<HTMLInputElement>) {
     canvas.current?.style.setProperty(
       str,

@@ -60,7 +60,7 @@ export default function Intro() {
 
   function handleMaximize() {
     if (!maximizeButton.current) return;
-    document.getElementById(`Page`)?.classList.add(`blur`);
+    document.getElementById(`Page`)?.classList.add(`fade`);
 
     dialog.current?.showModal();
 
