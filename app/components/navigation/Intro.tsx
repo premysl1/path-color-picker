@@ -114,7 +114,7 @@ export default function Intro() {
     }
 
     return () => document.removeEventListener(`keydown`, handleKeyMinize);
-  }, []);
+  });
 
   // Fallback for browsers without closedby support
   // source: https://developer.chrome.com/docs/modern-web-guidance/guides/ui-behaviors/light-dismiss-a-dialog
@@ -142,11 +142,11 @@ export default function Intro() {
 
   return (
     <>
-      <dialog
-      ref={dialog}
+      <dialog ref={dialog}
       onClose={() => document.getElementById('Page')?.classList.remove('fade')}
       onClick={isClosedBy ? undefined : handleClosedby}
-      closedby="any">
+      closedby="any"
+      role="banner">
         <hgroup onMouseMove={handleGlowEffect} className="glow-effect green">
           <h1>Path color picker</h1>
           <p><span>Extract colors by drawing any path across an image with your cursor.</span></p>

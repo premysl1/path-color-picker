@@ -1,14 +1,15 @@
 'use client';
 
-import {useRef, useState, useEffect} from 'react';
-import {handleXySplitterDown, handleXySplittersMove} from '../scripts/handleSplitter';
-import type {dragStart, panelsLengths} from '../scripts/handleSplitter';
-import handleGlowEffect from '../scripts/handleGlowEffect';
 import Image from 'next/image';
 import copyIcon from '../../public/icons/copy.svg';
 import downloadTextIcon from '../../public/icons/txt.svg';
 import deleteAllIcon from '../../public/icons/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
+import {useRef, useState, useEffect} from 'react';
+import {handleXySplitterDown, handleXySplittersMove} from '../scripts/handleSplitter';
+import handleGlowEffect from '../scripts/handleGlowEffect';
+import type {dragStart, panelsLengths} from '../scripts/handleSplitter';
 import * as colorConversion from '../scripts/color-conversion'; 
+import type {Props, Pixel, Samples} from '../scripts/types';
 
 export default function Viewports(
   {
@@ -133,8 +134,7 @@ export default function Viewports(
       r: color[0],
       g: color[1],
       b: color[2],
-      alpha: color[3] / 255,
-      isEveryChannelEmpty: color.every(channel => channel === 0)
+      alpha: color[3] / 255
     };
   }
 
@@ -158,8 +158,9 @@ export default function Viewports(
       return;
     }
 
-    const {isEveryChannelEmpty, ...rgba} = getPixelAt(imageData.current, x, y);
-    if (isEveryChannelEmpty) {
+    const rgba = getPixelAt(imageData.current, x, y);
+
+    if (rgba.alpha === 0) {
       return;
     }
 
@@ -268,9 +269,7 @@ export default function Viewports(
 
       const pixel = getPixelAt(imageData.current, imageX, imageY);
 
-      const {isEveryChannelEmpty, ...rgba} = pixel;
-
-      if (isEveryChannelEmpty) {
+      if (pixel.alpha === 0) {
         return;
       }
 
@@ -281,7 +280,7 @@ export default function Viewports(
       setSamples(previous => [
         ...previous,
         {
-          rgba,
+          rgba: pixel,
           format: selectFormat.current!.value,
           id: crypto.randomUUID()
         }
@@ -403,10 +402,10 @@ export default function Viewports(
     }, 200);
   }
 
-  const [samples, setSamples] = useState<samples>([]);
+  const [samples, setSamples] = useState<Samples>([]);
   let formatedTextSamples = useRef(``);
 
-  function convert(samples: samples) {
+  function convert(samples: Samples) {
     const converted = [];
     const textSamples = [];
 

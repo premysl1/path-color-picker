@@ -1,19 +1,18 @@
-type Props = {
+export type Props = {
 	frequency: number
 	selectFormat: React.RefObject<HTMLSelectElement | null>
 	canvas: React.RefObject<HTMLCanvasElement | null>
-  userImage?: HTMLImageElement | null
+  userImage: HTMLImageElement | null
 }
 
-interface Pixel {
+export interface Pixel {
   r: number,
   g: number,
   b: number,
-  alpha: number,
-  isEveryChannelEmpty: boolean
+  alpha: number
 }
 
-type samples = {
+export type Samples = {
   rgba: {
     r: number,
     g: number,
