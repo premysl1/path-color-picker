@@ -1,5 +1,5 @@
 type Props = {
-  frequencyInput: React.RefObject<HTMLInputElement | null>
+	frequency: number
 	selectFormat: React.RefObject<HTMLSelectElement | null>
 	canvas: React.RefObject<HTMLCanvasElement | null>
   userImage?: HTMLImageElement | null

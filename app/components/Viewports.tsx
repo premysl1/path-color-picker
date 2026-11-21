@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useRef, useState, useEffect} from 'react';
+import {useRef, useState, useEffect} from 'react';
 import {handleXySplitterDown, handleXySplittersMove} from '../scripts/handleSplitter';
 import type {dragStart, panelsLengths} from '../scripts/handleSplitter';
 import handleGlowEffect from '../scripts/handleGlowEffect';
@@ -9,27 +9,11 @@ import copyIcon from '../../public/icons/copy.svg';
 import downloadTextIcon from '../../public/icons/txt.svg';
 import deleteAllIcon from '../../public/icons/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
 import * as colorConversion from '../scripts/color-conversion'; 
-import { ContextAPI } from 'next/dist/server/lib/trace/tracer';
-
-//const testSamplesColor = () => {
-//  return {
-//    rgba: {
-//      r: Math.random() * 255,
-//      g: Math.random() * 255,
-//      b: Math.random() * 255,
-//      alpha: Math.random()
-//    },
-//    format: `sRGB`,
-//    id: crypto.randomUUID()
-//  };
-//};
-
-//const testSamples = Array.from({ length: 32 }, testSamplesColor);
 
 export default function Viewports(
   {
     canvas,
-    frequencyInput,
+    frequency,
     selectFormat,
     userImage
   }: Props
@@ -49,6 +33,9 @@ export default function Viewports(
   const ty = useRef(0);
   const scale = useRef(1);
   const imageData = useRef<ImageData>(null);
+  const samplingPath = useRef(false);
+  const lastSampledPoint = useRef<{x: number; y: number} | null>(null);
+  const accumulatedPathLength = useRef(0);
   const userImageRef = useRef(userImage);
   userImageRef.current = userImage;
   const lenses = useRef<(HTMLDivElement | null)[]>([]);
@@ -109,7 +96,7 @@ export default function Viewports(
 
   function getCanvasXy(
   canvas: HTMLCanvasElement,
-  e: React.PointerEvent
+  e: Pick<React.PointerEvent, `clientX` | `clientY`>
   ) {
     const canvasRect = canvas.getBoundingClientRect();
     
@@ -164,16 +151,112 @@ export default function Viewports(
     )
   }
 
-  function handlePointerdown(e: React.PointerEvent) {
+  function samplePixel(x: number, y: number) {
+    if (!(imageData.current
+    && selectFormat.current
+    && doesPixelExist(imageData.current, x, y))) {
+      return;
+    }
+
+    const {isEveryChannelEmpty, ...rgba} = getPixelAt(imageData.current, x, y);
+    if (isEveryChannelEmpty) {
+      return;
+    }
+
+    setSamples(previous => [
+      ...previous,
+      {
+        rgba,
+        format: selectFormat.current!.value,
+        id: crypto.randomUUID()
+      }
+    ]);
+  }
+
+  function sampleLine(
+  from: {
+    x: number,
+    y: number
+  },
+  to: {
+    x: number,
+    y: number
+  }
+  ) {
+    let x = from.x;
+    let y = from.y;
+    const dx = Math.abs(to.x - x);
+    const dy = Math.abs(to.y - y);
+    const sx = x < to.x ? 1 : -1;
+    const sy = y < to.y ? 1 : -1;
+    let error = dx - dy;
+
+    while (x !== to.x || y !== to.y) {
+      const twiceError = 2 * error;
+
+      if (twiceError > -dy) {
+        error -= dy;
+        x += sx;
+      }
+
+      if (twiceError < dx) {
+        error += dx;
+        y += sy;
+      }
+
+      samplePixel(x, y);
+    }
+  }
+
+  function samplePathPoint(point: {x: number; y: number}) {
+    const previous = lastSampledPoint.current;
+
+    if (!previous) {
+      return;
+    }
+
+    if (frequency === 1) {
+      sampleLine(previous, point);
+      lastSampledPoint.current = point;
+      return;
+    }
+
+    const dx = point.x - previous.x;
+    const dy = point.y - previous.y;
+    const segmentLength = Math.hypot(dx, dy);
+
+    if (segmentLength === 0) {
+      return;
+    }
+
+    let distanceToSample = frequency - accumulatedPathLength.current;
+
+    while (distanceToSample <= segmentLength) {
+      const step = distanceToSample / segmentLength;
+      const sampled = {
+        x: Math.round(previous.x + step * dx),
+        y: Math.round(previous.y + step * dy)
+      };
+
+      samplePixel(sampled.x, sampled.y);
+      distanceToSample += frequency;
+    }
+
+    accumulatedPathLength.current = (accumulatedPathLength.current + segmentLength) % frequency;
+    lastSampledPoint.current = point;
+  }
+
+  let panningId = useRef<number>(null);
+
+  function handlePointerDown(e: React.PointerEvent) {
     if (!(canvas.current
     && userImage
     && imageData.current
     && selectFormat.current)) {
       return;
     }
-    
+
     if (e.button === 0) {
-      canvas.current.setPointerCapture(e.pointerId);
       canvas.current.style.cursor = `crosshair`;
 
       const { x, y } = getCanvasXy(canvas.current, e);
@@ -185,35 +268,55 @@ export default function Viewports(
 
       const pixel = getPixelAt(imageData.current, imageX, imageY);
 
-      const { isEveryChannelEmpty, ...rgba } = pixel;
+      const {isEveryChannelEmpty, ...rgba} = pixel;
 
       if (isEveryChannelEmpty) {
         return;
       }
 
-      const sample = {
-        rgba,
-        format: selectFormat.current.value,
-        id: crypto.randomUUID()
-      };
-
-      setSamples(previous => [sample, ...previous]);
-
-      //isUserSamplingPath = true;
-      //accLength = 0;
-      //lastSampledX = x;
-      //lastSampledY = y;
-    } else if (e.button === 2) {
+      samplingPath.current = true;
+      lastSampledPoint.current = {x: imageX, y: imageY};
+      accumulatedPathLength.current = 0;
       canvas.current.setPointerCapture(e.pointerId);
+      setSamples(previous => [
+        ...previous,
+        {
+          rgba,
+          format: selectFormat.current!.value,
+          id: crypto.randomUUID()
+        }
+      ]);
+    } else if (e.button === 2) {
+      panningId.current = e.pointerId;
+      canvas.current.setPointerCapture(panningId.current);
       canvas.current.style.cursor = `grabbing`;
-
-      //isUserPanning = true;
     }
   }
 
   function handlePointerMove(e: React.PointerEvent) {
-    if (!canvas.current) {
+    if (!(canvas.current
+    && ctx.current
+    && userImage)) {
       return;
+    }
+
+    if (typeof panningId.current === `number`
+    && e.currentTarget.hasPointerCapture(panningId.current)) {
+      tx.current += e.movementX;
+      ty.current += e.movementY;
+
+      draw(ctx.current, canvas.current, userImage);
+    }
+
+    if (samplingPath.current && imageData.current) {
+      for (const pointerEvent of e.nativeEvent.getCoalescedEvents()) {
+        const point = getCanvasXy(canvas.current, pointerEvent);
+        const imagePoint = calculateImage(point.x, point.y);
+
+        if (doesPixelExist(imageData.current, imagePoint.imageX, imagePoint.imageY)) {
+          samplePathPoint({x: imagePoint.imageX, y: imagePoint.imageY});
+        }
+      }
     }
 
     const { x, y } = getCanvasXy(canvas.current, e);
@@ -247,6 +350,57 @@ export default function Viewports(
     }
 
     paintScope(imageX, imageY);
+  }
+
+  function handleMouseUp(e: React.MouseEvent) {
+    if (!canvas.current) {
+      return;
+    }
+
+    canvas.current.style.cursor = `default`;
+
+    if (e.button === 0) {
+      samplingPath.current = false;
+      lastSampledPoint.current = null;
+      accumulatedPathLength.current = 0;
+    } else if (e.button === 2) {
+      panningId.current = null;
+    }
+  }
+
+  let cursorTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  function handleWheel(e: React.WheelEvent) {
+    if (!(canvas.current
+    && ctx.current
+    && userImage)) {
+      return;
+    }
+
+    const { x, y } = getCanvasXy(canvas.current, e);
+
+    const factor = Math.pow(1.05, -e.deltaY * 0.01);
+
+    scale.current *= factor;
+
+    tx.current = x - (x - tx.current) * factor;
+    ty.current = y - (y - ty.current) * factor;
+
+    draw(ctx.current, canvas.current, userImage);
+
+    if (cursorTimeout.current === null) {
+      return;
+    }
+
+    canvas.current.style.cursor = `nesw-resize`;
+    if (cursorTimeout.current !== undefined) {
+      clearTimeout(cursorTimeout.current);
+    }
+    cursorTimeout.current = setTimeout(() => {
+      if (canvas.current) {
+        canvas.current.style.cursor = `default`
+      }
+    }, 200);
   }
 
   const [samples, setSamples] = useState<samples>([]);
@@ -427,8 +581,11 @@ export default function Viewports(
     <div ref={Viewports}
     onContextMenu={e => e.preventDefault()}
     id="Viewports">
-      <div ref={canvasContainer} onMouseMove={handleGlowEffect}>
-        <canvas onPointerDown={handlePointerdown} onPointerMove={userImage ? handlePointerMove : undefined}
+      <div ref={canvasContainer}>
+        <canvas onPointerDown={userImage ? handlePointerDown : undefined}
+        onPointerMove={userImage ? handlePointerMove : undefined}
+        onMouseUp={userImage ? handleMouseUp : undefined}
+        onWheel={userImage ? handleWheel : undefined}
         ref={canvas}></canvas>
       </div>
       <div ref={ViewportsSplitter}

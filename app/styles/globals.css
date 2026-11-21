@@ -51,6 +51,14 @@ nav {
   }
 }
 
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color" i]::-webkit-color-swatch {
+  border-color: white;
+}
+
 #Page {
   height: inherit;
   display: grid;
@@ -292,12 +300,12 @@ header {
     > canvas {
       width: 100%;
       height: 100%;
-      outline: 2px solid rgb(0 140 255);
+      outline: 2px solid #4000ff;
       outline-offset: -2px;
-      background:
-        repeating-conic-gradient(var(--background,
-      rgba(0, 140, 255, 0.4)) 0 25%,
-        var(--background-2, #000) 0 50%) 0 / 20px 20px;
+      background: repeating-conic-gradient(
+        var(--background, #0f003c) 0 25%,
+        var(--background-2, #000) 0 50%)
+        0 / 20px 20px;
     }
   }
 
@@ -353,10 +361,10 @@ header {
       }
 
       > #clipboard-content > li {
-        max-height: 1lh;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
         
         &:hover {
@@ -370,7 +378,6 @@ header {
         }
 
         > code {
-          text-wrap: nowrap;
           font-size: large;
         }
       }

@@ -7,21 +7,34 @@ import Intro from './components/navigation/Intro';
 import Viewports from './components/Viewports';
 
 export default function Page() {
-  const frequencyInput = useRef<HTMLInputElement>(null);
   const selectFormat = useRef<HTMLSelectElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [userImage, setUserImage] = useState<HTMLImageElement | null>(null);
+  const [frequency, setFrequency] = useState(50);
+
+  function handleFrequencyChange(value: string) {
+    if (value === '') {
+      setFrequency(50);
+      return;
+    }
+
+    const number = Number(value);
+
+    if (number >= 1) {
+      setFrequency(Math.floor(number));
+    }
+  }
 
   return (
     <main id="Page" className="fade">
       <nav>
         <menu>
           <li>
-            <ImageInput setUserImage={setUserImage}/>
+            <ImageInput canvas={canvas} setUserImage={setUserImage}/>
           </li>
           <li>
             <Controls canvas={canvas}
-            frequencyInput={frequencyInput}
+            onFrequencyChange={handleFrequencyChange}
             selectFormat={selectFormat}/>
           </li>
           <li>
@@ -32,7 +45,7 @@ export default function Page() {
         </menu>
       </nav>
       <Viewports canvas={canvas}
-      frequencyInput={frequencyInput}
+      frequency={frequency}
       selectFormat={selectFormat}
       userImage={userImage}/>
     </main>
