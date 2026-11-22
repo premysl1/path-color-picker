@@ -163,7 +163,7 @@ export default function Viewports({
           format: selectFormat.current.value,
           id: crypto.randomUUID(),
         },
-      ]
+      ];
     });
   }
 
@@ -287,7 +287,7 @@ export default function Viewports({
             format: selectFormat.current.value,
             id: crypto.randomUUID(),
           },
-        ]
+        ];
       });
     } else if (e.button === 2) {
       panningId.current = e.pointerId;

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import type React from 'react';
 import { useEffect, useRef } from 'react';
+import handleMoveGlowEffect from '../../scripts/handleGlowEffect';
 import questionMarkIcon from '../../../public/icons/question-mark.svg';
 import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
 
@@ -155,7 +156,10 @@ export default function Intro() {
         onClick={isClosedBy.current ? undefined : handleClosedby}
         closedby="any"
       >
-        <hgroup className="glow-effect green">
+        <hgroup
+          onMouseMove={handleMoveGlowEffect}
+          className="glow-effect green"
+        >
           <h1>Path color picker</h1>
           <p>
             <span>
@@ -164,7 +168,10 @@ export default function Intro() {
             </span>
           </p>
         </hgroup>
-        <section className="glow-effect blue">
+        <section
+          onMouseMove={handleMoveGlowEffect}
+          className="glow-effect blue"
+        >
           <h2>Supports:</h2>
           <ul>
             <li>
