@@ -121,16 +121,18 @@ header {
 
     > hgroup {
       &::before {
-        content: '';
+        content: "";
         z-index: -1;
         width: 100%;
         height: 100%;
         position: absolute;
-        background: linear-gradient(to left,
-            #0000,
-            rgba(0, 255, 21, 0.226),
-            rgba(0, 255, 21, 0.45),
-            #0000 35%);
+        background: linear-gradient(
+          to left,
+          #0000,
+          rgba(0, 255, 21, 0.226),
+          rgba(0, 255, 21, 0.45),
+          #0000 35%
+        );
         background-size: 200% 100%;
         animation: slide 8s ease-in infinite;
       }
@@ -160,13 +162,11 @@ header {
 
     > section {
       &::before {
-        content: '';
+        content: "";
         z-index: -1;
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top right,
-            #0000 50%,
-            #0ff7);
+        background: linear-gradient(to top right, #0000 50%, #0ff7);
       }
 
       flex-grow: 1;
@@ -258,7 +258,7 @@ header {
 }
 
 @property --glow-color {
-  syntax: '<color>';
+  syntax: "<color>";
   inherits: false;
   initial-value: transparent;
 }
@@ -267,21 +267,23 @@ header {
   --x: 50%;
   --y: 50%;
   --glow-color: transparent;
-  background-image: radial-gradient(circle 100px at var(--x) var(--y),
+  background-image: radial-gradient(
+    circle 100px at var(--x) var(--y),
     var(--glow-color),
-    transparent);
+    transparent
+  );
   transition: --glow-color 500ms;
-  
+
   &.green {
     &:hover {
       --glow-color: rgb(0 255 150 / 40%);
     }
   }
-  
+
   &.blue {
     &:hover {
       --glow-color: rgb(0 150 255 / 40%);
-    }    
+    }
   }
 }
 
@@ -302,9 +304,11 @@ header {
       height: 100%;
       outline: 2px solid #4000ff;
       outline-offset: -2px;
-      background: repeating-conic-gradient(
-        var(--background, #0f003c) 0 25%,
-        var(--background-2, #000) 0 50%)
+      background:
+        repeating-conic-gradient(
+          var(--background, #0f003c) 0 25%,
+          var(--background-2, #000) 0 50%
+        )
         0 / 20px 20px;
     }
   }
@@ -361,23 +365,38 @@ header {
       }
 
       > #clipboard-content > li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        
-        &:hover {
-          background: white;
-          color: black;
+        > button {
+          width: 100%;
+          padding: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          background: transparent;
+          color: inherit;
+
+          &:hover {
+            background: white;
+            color: black;
+          }
+
+          &.toDelete {
+            background: linear-gradient(
+              to right,
+              oklch(42.793% 0.25768 29.223),
+              oklch(22.793% 0.25768 29.223)
+            );
+            color: white;
+          }
         }
 
-        > div {
+        > button > div {
           width: 20px;
           height: 1lh;
         }
 
-        > code {
+        > button > code {
           font-size: large;
         }
       }
@@ -399,10 +418,4 @@ header {
   &:active {
     cursor: grabbing;
   }
-}
-
-.toDelete {
-  outline: none;
-  background: linear-gradient(to right, oklch(42.793% 0.25768 29.223), oklch(22.793% 0.25768 29.223)) !important;
-  color: white !important;
 }

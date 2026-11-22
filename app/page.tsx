@@ -1,8 +1,8 @@
 'use client';
 
-import {useRef, useState} from 'react';
-import ImageInput from './components/navigation/ImageInput';
+import { useRef, useState } from 'react';
 import Controls from './components/navigation/Controls';
+import ImageInput from './components/navigation/ImageInput';
 import Intro from './components/navigation/Intro';
 import Viewports from './components/Viewports';
 
@@ -30,24 +30,28 @@ export default function Page() {
       <nav>
         <menu>
           <li>
-            <ImageInput canvas={canvas} setUserImage={setUserImage}/>
+            <ImageInput canvas={canvas} setUserImage={setUserImage} />
           </li>
           <li>
-            <Controls canvas={canvas}
-            onFrequencyChange={handleFrequencyChange}
-            selectFormat={selectFormat}/>
+            <Controls
+              canvas={canvas}
+              onFrequencyChange={handleFrequencyChange}
+              selectFormat={selectFormat}
+            />
           </li>
           <li>
             <header>
-              <Intro/>
-            </header>  
+              <Intro />
+            </header>
           </li>
         </menu>
       </nav>
-      <Viewports canvas={canvas}
-      frequency={frequency}
-      selectFormat={selectFormat}
-      userImage={userImage}/>
+      <Viewports
+        canvas={canvas}
+        frequency={frequency}
+        selectFormat={selectFormat}
+        userImage={userImage}
+      />
     </main>
   );
 }

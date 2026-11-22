@@ -1,12 +1,15 @@
 'use client';
 
-import { useRef, useEffect, Ref, RefObject} from 'react';
 import NextImage from 'next/image';
+import { type RefObject, useEffect, useRef } from 'react';
 import openFileIcon from '../../../public/icons/file_open_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
 
-export default function ImageInput({canvas, setUserImage}: {
-  canvas: RefObject<HTMLCanvasElement | null>
-  setUserImage: React.Dispatch<React.SetStateAction<HTMLImageElement | null>>
+export default function ImageInput({
+  canvas,
+  setUserImage,
+}: {
+  canvas: RefObject<HTMLCanvasElement | null>;
+  setUserImage: React.Dispatch<React.SetStateAction<HTMLImageElement | null>>;
 }) {
   const input = useRef<HTMLInputElement>(null);
 
@@ -34,13 +37,14 @@ export default function ImageInput({canvas, setUserImage}: {
         URL.revokeObjectURL(objectURL);
         reject();
         console.error(`Image rejected.`);
-      }
+      };
 
       objectURL = URL.createObjectURL(file);
       image.src = objectURL;
     });
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Event listeners are installed once on the stable canvas ref.
   useEffect(() => {
     canvas.current?.addEventListener(`dragover`, handleCanvasDragover);
     window.addEventListener(`dragover`, handleWindowDragover);
@@ -66,9 +70,7 @@ export default function ImageInput({canvas, setUserImage}: {
     }
 
     function handleWindowDragover(e: DragEvent) {
-      if (!(canvas.current
-      && e.dataTransfer
-      && e.target instanceof Node)) {
+      if (!(canvas.current && e.dataTransfer && e.target instanceof Node)) {
         return;
       }
 
@@ -120,13 +122,14 @@ export default function ImageInput({canvas, setUserImage}: {
 
   return (
     <>
-      <input 
-      onChange={handleChange}
-      ref={input}
-      id="image-input"
-      type="file"
-      accept="image/*"
-      hidden/>
+      <input
+        onChange={handleChange}
+        ref={input}
+        id="image-input"
+        type="file"
+        accept="image/*"
+        hidden
+      />
       <button onClick={() => input.current?.click()}>
         <NextImage src={openFileIcon} alt="" />
         Click to pick an image.

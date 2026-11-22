@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import type React from 'react';
 
 type ControlsProps = {
   canvas: React.RefObject<HTMLCanvasElement | null>;
@@ -8,18 +8,16 @@ type ControlsProps = {
   onFrequencyChange: (value: string) => void;
 };
 
-export default function Controls(
-  {
-    canvas,
-    onFrequencyChange,
-    selectFormat,
-  }: ControlsProps
-) {
-  function handleInputBackground(str: string, e: React.InputEvent<HTMLInputElement>) {
-    canvas.current?.style.setProperty(
-      str,
-      e.currentTarget.value
-    );
+export default function Controls({
+  canvas,
+  onFrequencyChange,
+  selectFormat,
+}: ControlsProps) {
+  function handleInputBackground(
+    str: string,
+    e: React.InputEvent<HTMLInputElement>,
+  ) {
+    canvas.current?.style.setProperty(str, e.currentTarget.value);
   }
 
   return (
@@ -27,7 +25,7 @@ export default function Controls(
       <li>
         <label htmlFor="sampling-frequency">Frequency:</label>
         <input
-          onChange={e => onFrequencyChange(e.currentTarget.value)}
+          onChange={(e) => onFrequencyChange(e.currentTarget.value)}
           id="sampling-frequency"
           type="number"
           min="1"
@@ -54,12 +52,16 @@ export default function Controls(
       <li>
         <label htmlFor="canvas-background-color">Background:</label>
         <div>
-          <input onInput={e => handleInputBackground(`--background`, e)}
-          id="canvas-background-color"
-          type="color"
-          defaultValue="#0f003c"/>
-          <input onInput={e => handleInputBackground(`--background-2`, e)}
-          type="color"/>
+          <input
+            onInput={(e) => handleInputBackground(`--background`, e)}
+            id="canvas-background-color"
+            type="color"
+            defaultValue="#0f003c"
+          />
+          <input
+            onInput={(e) => handleInputBackground(`--background-2`, e)}
+            type="color"
+          />
         </div>
       </li>
     </menu>

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import handleGlowEffect from '../../scripts/handleGlowEffect';
 import Image from 'next/image';
-import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
 import questionMarkIcon from '../../../public/icons/question-mark.svg';
+import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
 
 export default function Intro() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -12,7 +12,10 @@ export default function Intro() {
   const maximizeButton = useRef(null);
   let duration = 250;
 
-  function getMinimizedDialog(dialog: HTMLDialogElement, maximizeButton: HTMLButtonElement) {
+  function getMinimizedDialog(
+    dialog: HTMLDialogElement,
+    maximizeButton: HTMLButtonElement,
+  ) {
     const dialogRect = dialog.getBoundingClientRect();
     const buttonRect = maximizeButton.getBoundingClientRect();
 
@@ -25,12 +28,12 @@ export default function Intro() {
     const dy = buttonCenterY - dialogCenterY;
     const scale = Math.min(
       buttonRect.width / dialogRect.width,
-      buttonRect.height / dialogRect.height
+      buttonRect.height / dialogRect.height,
     );
 
     return {
       transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
-      opacity: 0
+      opacity: 0,
     };
   }
 
@@ -41,15 +44,15 @@ export default function Intro() {
       [
         {
           transform: `translate(0, 0) scale(1)`,
-          opacity: 1
+          opacity: 1,
         },
-        getMinimizedDialog(dialog.current, maximizeButton.current)
+        getMinimizedDialog(dialog.current, maximizeButton.current),
       ],
       {
         duration,
         easing: `ease-in`,
-        fill: `forwards`
-      }
+        fill: `forwards`,
+      },
     );
 
     await animation?.finished;
@@ -69,29 +72,29 @@ export default function Intro() {
         getMinimizedDialog(dialog.current, maximizeButton.current),
         {
           transform: `translate(0, 0) scale(1)`,
-          opacity: 1
-        }
+          opacity: 1,
+        },
       ],
       {
         duration,
-        easing: `ease-out`
-      }
+        easing: `ease-out`,
+      },
     );
   }
 
-  let isClosedBy = useRef(false).current;
+  const isClosedBy = useRef(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This effect initializes the dialog and installs one global keyboard listener.
   useEffect(() => {
-    if (window.matchMedia(
-      `(prefers-reduced-motion: reduce)`
-    ).matches) {
+    if (window.matchMedia(`(prefers-reduced-motion: reduce)`).matches) {
       duration = 0;
     }
 
     handleMaximize();
 
-    isClosedBy = `closedBy` in HTMLDialogElement.prototype
-               && typeof HTMLDialogElement !== `undefined`;
+    isClosedBy.current =
+      `closedBy` in HTMLDialogElement.prototype &&
+      typeof HTMLDialogElement !== `undefined`;
 
     document.addEventListener(`keydown`, handleKeyMinize);
 
@@ -101,20 +104,22 @@ export default function Intro() {
       }
 
       function minize() {
-        event.preventDefault(); 
+        event.preventDefault();
         handleMinimize();
       }
 
       if (event.key === `Escape`) {
         minize();
-      } else if (document.activeElement === minimizeButton.current
-      && (event.key === `Enter` || event.key === ` `)) {
+      } else if (
+        document.activeElement === minimizeButton.current &&
+        (event.key === `Enter` || event.key === ` `)
+      ) {
         minize();
       }
     }
 
     return () => document.removeEventListener(`keydown`, handleKeyMinize);
-  });
+  }, []);
 
   // Fallback for browsers without closedby support
   // source: https://developer.chrome.com/docs/modern-web-guidance/guides/ui-behaviors/light-dismiss-a-dialog
@@ -127,12 +132,11 @@ export default function Intro() {
     // 2. Check if the click coordinates fall within the dialog's content box.
     // This distinguishes between a click on the backdrop vs a click on the dialog's background/padding.
     const rect = dialog.current.getBoundingClientRect();
-    const isDialogContent = (
+    const isDialogContent =
       rect.top <= event.clientY &&
       event.clientY <= rect.top + rect.height &&
       rect.left <= event.clientX &&
-      event.clientX <= rect.left + rect.width
-    );
+      event.clientX <= rect.left + rect.width;
 
     if (isDialogContent) return;
 
@@ -142,31 +146,58 @@ export default function Intro() {
 
   return (
     <>
-      <dialog ref={dialog}
-      onClose={() => document.getElementById('Page')?.classList.remove('fade')}
-      onClick={isClosedBy ? undefined : handleClosedby}
-      closedby="any"
-      role="banner">
-        <hgroup onMouseMove={handleGlowEffect} className="glow-effect green">
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop dismissal is mouse-only; Escape is handled by the dialog keyboard listener. */}
+      <dialog
+        ref={dialog}
+        onClose={() =>
+          document.getElementById('Page')?.classList.remove('fade')
+        }
+        onClick={isClosedBy.current ? undefined : handleClosedby}
+        closedby="any"
+      >
+        <hgroup className="glow-effect green">
           <h1>Path color picker</h1>
-          <p><span>Extract colors by drawing any path across an image with your cursor.</span></p>
+          <p>
+            <span>
+              Extract colors by drawing any path across an image with your
+              cursor.
+            </span>
+          </p>
         </hgroup>
-        <section onMouseMove={handleGlowEffect} className="glow-effect blue">
+        <section className="glow-effect blue">
           <h2>Supports:</h2>
           <ul>
-            <li><span>+</span> RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ D50, LCH, LAB</li>
-            <li><span style={{color: `cyan`}}>+</span> path sampling</li>
-            <li><span style={{color: `magenta`}}>+</span> panning and zooming</li>
-            <li><span style={{color: `yellow`}}>+</span> adjustable sampling frequency</li>
+            <li>
+              <span>+</span> RGB, sRGB, HEX, OKLCH, OKLAB, HSL, XYZ D65, XYZ
+              D50, LCH, LAB
+            </li>
+            <li>
+              <span style={{ color: `cyan` }}>+</span> path sampling
+            </li>
+            <li>
+              <span style={{ color: `magenta` }}>+</span> panning and zooming
+            </li>
+            <li>
+              <span style={{ color: `yellow` }}>+</span> adjustable sampling
+              frequency
+            </li>
           </ul>
-          <i><span style={{color: `black`}}>?</span> Start sampling using the left-click button (hold and move your mouse to sample a path), or right-click to pan.</i>
+          <i>
+            <span style={{ color: `black` }}>?</span> Start sampling using the
+            left-click button (hold and move your mouse to sample a path), or
+            right-click to pan.
+          </i>
         </section>
-        <button ref={minimizeButton} onClick={handleMinimize} id="minimizeButton">
-          <Image src={minimizeIcon} alt="Minimize dialog." role="img"/>
+        <button
+          ref={minimizeButton}
+          onClick={handleMinimize}
+          id="minimizeButton"
+        >
+          <Image src={minimizeIcon} alt="Minimize dialog." role="img" />
         </button>
       </dialog>
       <button ref={maximizeButton} onClick={handleMaximize} id="maximizeButton">
-        <Image src={questionMarkIcon} alt="Maximize dialog." role="img"/>
+        <Image src={questionMarkIcon} alt="Maximize dialog." role="img" />
       </button>
     </>
   );

@@ -1,4 +1,3 @@
-
 import './styles/base.css';
 import './styles/globals.css';
 import { Geist } from 'next/font/google';
@@ -14,9 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={geist.className}>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,12 +1,9 @@
-
 // rgb color conversion for every web color format
 // source: https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Colors/Color_format_converter
 
 // for every final conversion:
 //     input → {r: int, g: int, b: int: alpha: float}
 //     output → string
-
-'use strict';
 
 const LRGB_LMS_MATRIX = [
   [0.4122214708, 0.5363325363, 0.0514459929],
@@ -37,9 +34,9 @@ const LRGB_XYZ_D65_MATRIX = [
 ];
 
 function multiplyByMatrix(matrix, tuple) {
-  let i = [0, 0, 0];
-  let j = matrix.length;
-  let k = matrix[0].length;
+  const i = [0, 0, 0];
+  const j = matrix.length;
+  const k = matrix[0].length;
   for (let l = 0; l < j; l++)
     for (let m = 0; m < k; m++) i[l] += matrix[l][m] * tuple[m];
   return i;
@@ -50,7 +47,7 @@ function rgbToLinear(c) {
 }
 
 function intToHex(i) {
-  return Math.floor(i).toString(16).padStart(2, "0").toLowerCase();
+  return Math.floor(i).toString(16).padStart(2, '0').toLowerCase();
 }
 
 function rgbToHEXText(c) {
@@ -102,16 +99,16 @@ function rgbaToHSLA(color) {
 export function toHSLAText(color) {
   const { h, s, l, alpha } = rgbaToHSLA(color);
   return `hsl(${h.toFixed(0)} ${s.toFixed(0)}% ${l.toFixed(0)}%${
-    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
+    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''
   })`;
 }
 
 export function rgbaToHWBAText(color) {
-  let { h, s, l, alpha } = rgbaToHSLA(color);
+  const { h, s, l, alpha } = rgbaToHSLA(color);
   const chroma = s * (1 - Math.abs(l / 50 - 1));
-  let W = (l - chroma / 2).toFixed(0);
-  let B = (100 - l - chroma / 2).toFixed(0);
-  return `hwb(${h} ${W}% ${B}%${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
+  const W = (l - chroma / 2).toFixed(0);
+  const B = (100 - l - chroma / 2).toFixed(0);
+  return `hwb(${h} ${W}% ${B}%${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''})`;
 }
 
 function rgbaToXYZD50(color) {
@@ -125,11 +122,11 @@ function rgbaToXYZD50(color) {
 }
 
 export function rgbaToXYZD50Text(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const xyz = rgbaToXYZD50(color);
   return `color(xyz-d50 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
-  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
+  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''})`;
 }
 
 function rgbaToXYZD65(color) {
@@ -143,11 +140,11 @@ function rgbaToXYZD65(color) {
 }
 
 export function rgbaToXYZD65Text(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const xyz = rgbaToXYZD65(color);
   return `color(xyz-d65 ${xyz.x.toFixed(5)} ${xyz.y.toFixed(5)} ${xyz.z.toFixed(
     5,
-  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
+  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''})`;
 }
 
 const D65 = [0.3457 / 0.3585, 1, 0.2958 / 0.3585];
@@ -161,11 +158,11 @@ function xyzToLab(color) {
 }
 
 export function rgbaToLabText(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const xyz = rgbaToXYZD50(color);
   const lab = xyzToLab(xyz);
   return `lab(${lab.l.toFixed(3)} ${lab.a.toFixed(3)} ${lab.b.toFixed(3)}${
-    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
+    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''
   })`;
 }
 
@@ -183,11 +180,11 @@ function rgbToOklab(color) {
 }
 
 export function toOkLabText(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const oklab = rgbToOklab(color);
   return `oklab(${oklab.l.toFixed(5)} ${oklab.a.toFixed(5)} ${oklab.b.toFixed(
     5,
-  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
+  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''})`;
 }
 
 function labToLCH(color) {
@@ -201,12 +198,12 @@ function labToLCH(color) {
 }
 
 export function toLCHText(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const xyz = rgbaToXYZD50(color);
   const lab = xyzToLab(xyz);
   const lch = labToLCH(lab);
   return `lch(${lch.l.toFixed(3)} ${lch.c.toFixed(3)} ${lch.h.toFixed(3)}${
-    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""
+    alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''
   })`;
 }
 
@@ -217,9 +214,9 @@ function rgbaToOkLCh(color) {
 }
 
 export function toOkLChText(color) {
-  let { alpha } = color;
+  const { alpha } = color;
   const oklch = rgbaToOkLCh(color);
   return `oklch(${oklch.l.toFixed(5)} ${oklch.c.toFixed(5)} ${oklch.h.toFixed(
     5,
-  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ""})`;
+  )}${alpha < 1.0 ? ` / ${alpha.toFixed(3)}` : ''})`;
 }
