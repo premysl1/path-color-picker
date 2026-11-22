@@ -3,9 +3,9 @@
 import Image from 'next/image';
 import type React from 'react';
 import { useEffect, useRef } from 'react';
-import handleMoveGlowEffect from '../../scripts/handleGlowEffect';
 import questionMarkIcon from '../../../public/icons/question-mark.svg';
 import minimizeIcon from '../../../public/icons/remove_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg';
+import handleMoveGlowEffect from '../../scripts/handleGlowEffect';
 
 export default function Intro() {
   const dialog = useRef<HTMLDialogElement>(null);

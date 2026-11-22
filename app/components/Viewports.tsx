@@ -6,6 +6,7 @@ import copyIcon from '../../public/icons/copy.svg';
 import deleteAllIcon from '../../public/icons/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg';
 import downloadTextIcon from '../../public/icons/txt.svg';
 import * as colorConversion from '../scripts/color-conversion';
+import handleMoveGlowEffect from '../scripts/handleGlowEffect';
 import type { dragStart, panelsLengths } from '../scripts/handleSplitter';
 import {
   handleXySplitterDown,
@@ -518,7 +519,6 @@ export default function Viewports({
     URL.revokeObjectURL(url);
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: This effect installs observers once; callbacks read mutable refs.
   useEffect(() => {
     const ViewportsResize = new ResizeObserver(() => {
       if (!(Viewports.current && ViewportsSplitter.current)) {
@@ -582,7 +582,6 @@ export default function Viewports({
     };
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The render helper only reads stable refs and is paired with this image update.
   useEffect(() => {
     if (userImage) {
       render(userImage);
@@ -590,7 +589,6 @@ export default function Viewports({
   }, [userImage]);
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: Suppresses the browser context menu over the application viewport.
     <section
       ref={Viewports}
       onContextMenu={(e) => e.preventDefault()}
@@ -631,7 +629,12 @@ export default function Viewports({
         className="splitter vertical"
       ></div>
       <div ref={secondaryViewports}>
-        <div ref={scope} id="scope" className="glow-effect blue">
+        <div
+          onMouseMove={handleMoveGlowEffect}
+          ref={scope}
+          id="scope"
+          className="glow-effect blue"
+        >
           {LENS_IDS.map((id, i) => (
             <div
               ref={(div) => {
