@@ -151,14 +151,20 @@ export default function Viewports({
       return;
     }
 
-    setSamples((previous) => [
-      ...previous,
-      {
-        rgba,
-        format: selectFormat.current.value,
-        id: crypto.randomUUID(),
-      },
-    ]);
+    setSamples((previous) => {
+      if (!selectFormat.current) {
+        return previous;
+      }
+
+      return [
+        ...previous,
+        {
+          rgba,
+          format: selectFormat.current.value,
+          id: crypto.randomUUID(),
+        },
+      ]
+    });
   }
 
   function sampleLine(
@@ -259,9 +265,9 @@ export default function Viewports({
         return;
       }
 
-      const pixel = getPixelAt(imageData.current, imageX, imageY);
+      const rgba = getPixelAt(imageData.current, imageX, imageY);
 
-      if (pixel.alpha === 0) {
+      if (rgba.alpha === 0) {
         return;
       }
 
@@ -269,14 +275,20 @@ export default function Viewports({
       lastSampledPoint.current = { x: imageX, y: imageY };
       accumulatedPathLength.current = 0;
       canvas.current.setPointerCapture(e.pointerId);
-      setSamples((previous) => [
-        ...previous,
-        {
-          rgba: pixel,
-          format: selectFormat.current.value,
-          id: crypto.randomUUID(),
-        },
-      ]);
+      setSamples((previous) => {
+        if (!selectFormat.current) {
+          return previous;
+        }
+
+        return [
+          ...previous,
+          {
+            rgba,
+            format: selectFormat.current.value,
+            id: crypto.randomUUID(),
+          },
+        ]
+      });
     } else if (e.button === 2) {
       panningId.current = e.pointerId;
       canvas.current.setPointerCapture(panningId.current);
