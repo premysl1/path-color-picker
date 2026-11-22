@@ -1,0 +1,421 @@
+html {
+  height: 100%;
+  scrollbar-color: oklch(0.75 0 0) oklch(0.25 0 0);
+
+  body {
+    height: inherit;
+    background: black;
+    color: white;
+
+    select {
+      background: black;
+      color: white;
+    }
+  }
+}
+
+*:focus {
+  outline: 2px solid cyan;
+  outline-offset: -2px;
+}
+
+nav {
+  overflow-x: scroll;
+  background: #0a0a0a;
+
+  > menu {
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+
+    :has(#image-input) > button {
+      min-width: max-content;
+      padding: 0.5ch;
+      padding-right: 0.9ch;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgb(15, 15, 15);
+      color: white;
+
+      &:hover {
+        background: rgb(45, 45, 45);
+      }
+
+      &:active {
+        background: rgb(90, 90, 90);
+      }
+    }
+  }
+}
+
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color" i]::-webkit-color-swatch {
+  border-color: white;
+}
+
+#Page {
+  height: inherit;
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  #Controls {
+    padding: 0.5ch;
+    display: flex;
+    gap: 16px;
+    background: #0f0f0f;
+
+    :has(#sampling-frequency) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      #sampling-frequency {
+        width: 5ch;
+        padding-left: 0.5ch;
+      }
+    }
+
+    :has(#select-format) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      #select-format {
+        width: 9ch;
+        padding-left: 0.2ch;
+      }
+    }
+
+    :has(#canvas-background-color) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      div {
+        height: 100%;
+        display: flex;
+        gap: 8px;
+
+        input {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+header {
+  > dialog {
+    margin: 0;
+    position: absolute;
+    inset: 0;
+    place-self: center;
+    background: black;
+    color: white;
+
+    > hgroup {
+      &::before {
+        content: "";
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: linear-gradient(
+          to left,
+          #0000,
+          rgba(0, 255, 21, 0.226),
+          rgba(0, 255, 21, 0.45),
+          #0000 35%
+        );
+        background-size: 200% 100%;
+        animation: slide 8s ease-in infinite;
+      }
+
+      z-index: 0;
+      height: 14em;
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      > h1 {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
+
+      > p > span {
+        background: #00000047;
+        padding: 4px 6px;
+      }
+
+      > * {
+        text-align: center;
+      }
+    }
+
+    > section {
+      &::before {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top right, #0000 50%, #0ff7);
+      }
+
+      flex-grow: 1;
+      z-index: 0;
+      padding: 32px;
+      position: relative;
+      outline: 2px solid cyan;
+      outline-offset: -2px;
+
+      > h2 {
+        font-size: large;
+        margin-bottom: 16px;
+      }
+
+      > ul {
+        margin-bottom: 16px;
+
+        > i {
+          display: block;
+        }
+      }
+
+      > ul > li > span,
+      > i > span {
+        font-weight: 800;
+      }
+
+      > i > span {
+        font-style: normal;
+      }
+    }
+
+    > #minimizeButton {
+      width: 4ch;
+      height: 3ch;
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: grid;
+      place-items: center;
+      background: rgb(15, 15, 15);
+
+      &:hover {
+        background: rgb(45, 45, 45);
+      }
+
+      &:active {
+        background: rgb(90, 90, 90);
+      }
+    }
+  }
+
+  > #maximizeButton {
+    width: 3.5ch;
+    height: 3.5ch;
+    padding: 2.5px;
+    display: grid;
+    place-items: center;
+    position: absolute;
+    bottom: 1.5ch;
+    right: 1.5ch;
+    border-radius: 50%;
+    background: black;
+    outline: 2px solid greenyellow;
+
+    &:hover {
+      background: rgb(45, 45, 45);
+    }
+
+    &:active {
+      background: rgb(90, 90, 90);
+    }
+
+    > img {
+      width: 60%;
+      height: 60%;
+    }
+  }
+}
+
+@keyframes slide {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 200% 0%;
+  }
+}
+
+@property --glow-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+.glow-effect {
+  --x: 50%;
+  --y: 50%;
+  --glow-color: transparent;
+  background-image: radial-gradient(
+    circle 100px at var(--x) var(--y),
+    var(--glow-color),
+    transparent
+  );
+  transition: --glow-color 500ms;
+
+  &.green {
+    &:hover {
+      --glow-color: rgb(0 255 150 / 40%);
+    }
+  }
+
+  &.blue {
+    &:hover {
+      --glow-color: rgb(0 150 255 / 40%);
+    }
+  }
+}
+
+.fade {
+  filter: blur(1px) grayscale(80%);
+}
+
+#Viewports {
+  margin: 20px;
+  display: flex;
+  overflow: auto;
+
+  > div:first-child {
+    flex: 0.6;
+
+    > canvas {
+      width: 100%;
+      height: 100%;
+      outline: 2px solid #4000ff;
+      outline-offset: -2px;
+      background:
+        repeating-conic-gradient(
+          var(--background, #0f003c) 0 25%,
+          var(--background-2, #000) 0 50%
+        )
+        0 / 20px 20px;
+    }
+  }
+
+  > div:nth-child(3) {
+    flex: 0.4;
+    display: flex;
+    flex-direction: column;
+
+    #scope {
+      flex: 0.5;
+      display: grid;
+      grid-template: repeat(9, 1fr) / repeat(9, 1fr);
+    }
+
+    #clipboard {
+      flex: 0.6;
+      padding: 8px 16px;
+      background: rgb(32, 32, 32);
+      overflow-y: auto;
+      scrollbar-color: oklch(0.25 0 0) oklch(0.75 0 0);
+
+      > div:first-child {
+        padding-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+
+        > div:first-of-type {
+          display: flex;
+
+          > button {
+            background: transparent;
+
+            > img {
+              max-width: 35px;
+              max-height: 35px;
+            }
+          }
+
+          > button:first-child > img {
+            padding: 6px;
+          }
+
+          > button:nth-child(2) > img {
+            padding: 4px;
+          }
+
+          > button:nth-child(3) {
+            margin-left: 4px;
+          }
+        }
+      }
+
+      > #clipboard-content > li {
+        > button {
+          width: 100%;
+          padding: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          background: transparent;
+          color: inherit;
+
+          &:hover {
+            background: white;
+            color: black;
+          }
+
+          &.toDelete {
+            background: linear-gradient(
+              to right,
+              oklch(42.793% 0.25768 29.223),
+              oklch(22.793% 0.25768 29.223)
+            );
+            color: white;
+          }
+        }
+
+        > button > div {
+          width: 20px;
+          height: 1lh;
+        }
+
+        > button > code {
+          font-size: large;
+        }
+      }
+    }
+  }
+}
+
+.splitter {
+  cursor: move;
+
+  &.vertical {
+    width: 10px;
+  }
+
+  &.horizontal {
+    height: 10px;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}

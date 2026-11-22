@@ -1,6 +1,6 @@
 # Path Color Picker
 
-A client-side web application for sampling and extracting continuous color palettes along custom drawn paths across images. Built with vanilla JavaScript and the HTML5 Canvas API with zero dependencies.
+A client-side web application for sampling and extracting color palettes along custom-drawn paths across images. Built with Next.js and React, using the HTML5 Canvas API for image display and pixel sampling.
 
 ## Features
 
@@ -18,14 +18,14 @@ A client-side web application for sampling and extracting continuous color palet
   - XYZ D65 / XYZ D50
 - **Palette Management & Export**: Interactive color swatch list, batch clipboard copy, and `.txt` file export.
 - **Custom Background**: Single color or gradient canvas background for contrast checking.
-- **Client-Side Processing**: All image processing and pixel manipulation run locally in the browser with no server requests.
+- **Client-Side Processing**: Image loading and pixel sampling run locally in the browser; sampled colors are not sent to a server.
 
 ## Technical Details
 
 - **HTML5 Canvas & ImageData**: Direct pixel buffer reading via `getImageData` with coordinate mapping that accounts for dynamic canvas scaling, aspect ratio fitting, and pan offsets.
-- Native state manipulation
-- **Responsive Layout**: `ResizeObserver` integration for synchronized canvas dimensions and viewport scaling.
-- **Zero Dependencies**: Pure HTML5, CSS3 (Grid, Flexbox, SVG masks), and modern JavaScript (ES6+).
+- **React State and Refs**: React manages the sampled palette and image state, while refs hold canvas and pointer-interaction state.
+- **Responsive Layout**: `ResizeObserver` integration keeps the canvas dimensions and viewport layout synchronized.
+- **Styling**: CSS Grid, Flexbox, and SVG icons.
 
 ## Controls
 
@@ -33,7 +33,7 @@ A client-side web application for sampling and extracting continuous color palet
 | :--- | :--- |
 | Sample Colors | `Left-click + Drag` |
 | Pan Canvas | `Right-click + Drag` |
-| Load Image | Drag and drop, file selector, or example image button |
+| Load Image | Drag and drop or file selector |
 | Change Color Format | Format dropdown |
 | Adjust Frequency | Sampling frequency number input |
 | Export | Copy button or Download `.txt` button |
